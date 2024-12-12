@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ジャッジ</title>
+    <style>
+        body { font-family: Arial, sans-serif; text-align: center; margin: 20px; }
+        button { margin: 5px; padding: 10px 20px; font-size: 16px; }
+        .score { font-size: 20px; margin: 10px; }
+    </style>
+</head>
+<body>
+    <h1>ジャッジ画面</h1>
+    <p>ジャッジID: <span id="judgeId"></span></p>
+    <div>
+        <h2>赤の操作</h2>
+        <button onclick="updateScore(1, 0)">赤 +1</button>
+        <button onclick="updateScore(-1, 0)">赤 -1</button>
+    </div>
+    <div>
+        <h2>青の操作</h2>
+        <button onclick="updateScore(0, 1)">青 +1</button>
+        <button onclick="updateScore(0, -1)">青 -1</button>
+    </div>
+
+    <script>
+        const ws = new WebSocket('ws://192.168.13.114:8181');
+        const urlParams = new URLSearchParams(window.location.search);
+        const roomId = urlParams.get('roomId');
+        console.log(roomId); // "kata-roomA" など
+
+        const judgeId = `judge-${Math.floor(Math.random() * 1000)}`;
+
+        document.getElementById('judgeId').textContent = judgeId;
+
+        ws.onopen = () => {
+            ws.send(JSON.stringify({ type: 'joinRoom', roomId, judgeId, role:'judge', mode: roomId.startsWith('kata') ? 'kata' : 'kumite' }));
+        };
+
+        function updateScore(red, blue) {
+            const data = JSON.stringify({ type: 'update', judgeId, red, blue });
+            console.log(data);
+            ws.send(data);
+        }
+
+    </script>
+</body>
+</html>
