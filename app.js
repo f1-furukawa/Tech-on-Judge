@@ -1,5 +1,7 @@
 const WebSocket = require('ws');
-const wss = new WebSocket.Server({ port: 8181 });
+const port = process.env.PORT || 8181;
+console.log(port);
+const wss = new WebSocket.Server({ port: port });
 
 const rooms = {}; // 部屋ごとのスコア管理
 
