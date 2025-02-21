@@ -23,9 +23,9 @@
         <button onclick="updateScore(0, 1)">青 +1</button>
         <button onclick="updateScore(0, -1)">青 -1</button>
     </div>
-
+    <script src="js/wsurl.js"></script>
     <script>
-        const ws = new WebSocket('https://tech-on-judge-ws.onrender.com');
+        const ws = new WebSocket(wsurl);
         const urlParams = new URLSearchParams(window.location.search);
         const roomId = urlParams.get('roomId');
         console.log(roomId); // "kata-roomA" など

@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>テコンドー スコアボード</title>
+    <style>
+        body {
+            background-color: black;
+            color: white;
+            text-align: center;
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+        /* div {
+            border: 1px solid white;
+        } */
+        .container {
+            width: 100vw;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+        .logo-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            height: 20vh;
+            padding: 10px;
+        }
+        .logo-container img {
+            height: 100%;
+            max-width: 35%;
+            object-fit: contain;
+        }
+        .logo-left {
+            flex-grow: 1;
+            display: flex;
+            justify-content: flex-start;
+        }
+        .logo-right {
+            flex-grow: 1;
+            display: flex;
+            justify-content: flex-end;
+        }
+        .score {
+            border-top: 1vh solid white;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 10vw;
+            font-weight: bold;
+            margin: 20px 0;
+            padding: 5px;
+        }
+        .score .blue {
+            background-color: blue;
+            padding: 20px;
+            width: 20vw;
+        }
+        .score .even {
+            padding: 20px;
+            width: 10vw;
+            font-size: 6vw;
+        }
+        .score .red {
+            background-color: red;
+            padding: 20px;
+            width: 20vw;
+        }
+        .kataname{
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 10vh;
+            font-size:5vh;
+            border-top: 0.5vh solid white;
+            border-bottom: 0.5vh solid white;
+            margin: 5px 5px;
+        }
+
+        .judge-scores-container {
+            height: 30vh;
+            display: flex;
+            justify-content: space-around;
+            flex-wrap: wrap;
+        }
+        .judge {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin: 10px;
+        }
+        .bar {
+            width: 8vw;
+            height: 1vw;
+        }
+        .blue-bar {
+            background-color: blue;
+        }
+        .red-bar {
+            background-color: red;
+        }
+        .score-text {
+            font-size: 4vw;
+            color: white;
+            text-align: center;
+        }
+        .judge-block {
+            display: flex;
+            flex-direction: column;
+            gap: 1px; 
+        }
+        .judge-row {
+            display: flex;
+            flex-direction: row;
+            gap: 10px;
+        }
+        .judge-id{
+            font-size: 2vh;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- ロゴ部分 -->
+        <div class="logo-container">
+            <div class="logo-left">
+                <img src="img/logo_tec.png" class="logo" alt="ITF Logo">
+                <div id="roomname"></div>
+            </div>
+            
+            <div class="logo-right">
+                <img src="img/logo_itf.png" class="logo" alt="ITF Logo">
+                <img src="img/logo_main.png" class="logo" alt="Main Logo">
+            </div>
+        </div>
+        
+        <!-- スコア表示部分 -->
+        <div class="score">
+            <div class="blue" id="totalBluePoints">0</div>
+            <div class="even" id="totalEvenPoints">0</div>
+            <div class="red"  id="totalRedPoints">0</div>
+        </div>
+        
+        <div class="kataname">
+            
+        </div>
+        
+        <!-- ジャッジスコア部分 -->
+        <div id="judge-scores-container" class="judge-scores-container">
+            <!--
+            <div class="judge-block">
+                <div class="judge-id">judge-49</div> 
+                <div class="judge-row">
+                    <div class="judge">
+                        <div class="blue-bar bar"></div>
+                        <div class="score-text">2.4</div>
+                        <div class="score-text">0.0</div>
+                    </div>
+                    <div class="judge">
+                        <div class="red-bar bar"></div>
+                        <div class="score-text">2.2</div>
+                        <div class="score-text">0.0</div>
+                    </div>
+                </div>
+            </div>
+            -->
+        </div>
+    </div>
+    <script src="js/wsurl.js"></script>
+    <script src="js/kata.js"></script>
+</body>
+</html>
