@@ -7,7 +7,7 @@ document.title = `部屋 ${roomId} | スコアボード`;
 document.querySelector('#roomname').textContent = `${roomId}`;
 
 //const ws = new WebSocket('https://tech-on-judge-ws.onrender.com');
-const ws = new WebSocket('ws://localhost:8181');
+const ws = new WebSocket(wsurl);
 
 ws.onopen = () => {
     ws.send(JSON.stringify({ type: 'joinRoom', roomId, mode: roomId.startsWith('kata') ? 'kata' : 'kumite' }));
@@ -67,6 +67,10 @@ ws.onmessage = (event) => {
     }
 };
 
+document.getElementById('resetButton').addEventListener('click', () => {
+    ws.send(JSON.stringify({ type: 'reset' }));
+    document.getElementById('judges-bar-container').innerHTML = '';
+});
 
 function makeJadgeBar(container,jid)
 {
