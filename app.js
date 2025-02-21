@@ -7,23 +7,19 @@ const rooms = {}; // 部屋ごとのスコア管理
 
 function broadcastScores(roomId) {
     const room = rooms[roomId];
-    const results = { kumite: [], kata: [] };
+    const results = [];
 
     for (const [judgeId, data] of Object.entries(room.judges)) {
         const diff = data.red - data.blue;
-        if (room.mode === 'kumite') {
-            results.kumite.push({ judgeId, red: data.red, blue: data.blue, diff });
-        } else if (room.mode === 'kata') {
-            results.kata.push({ judgeId, red: data.red, blue: data.blue,diff });
-        }
+        results.push({ judgeId, red: data.red, blue: data.blue, diff });
+        
     }
     console.log(results);
     wss.clients.forEach(client => {
         if (client.readyState === WebSocket.OPEN && client.roomId === roomId) {
             client.send(JSON.stringify({
                 type: 'scores',
-                kumiteScores: results.kumite,
-                kataScores: results.kata,
+                Scores: results,
             }));
         }
     });
@@ -37,26 +33,28 @@ wss.on('connection', ws => {
             case 'joinRoom':
                 ws.roomId = data.roomId;
                 if (!rooms[data.roomId]) {
-                    rooms[data.roomId] = { mode: data.mode, judges: {} };
+                    rooms[data.roomId] = { mode: data.mode, judges: {} ,mainjudge:{}};
                 }
                 console.log(ws.roomId,data.judgeId);
                 const room = rooms[ws.roomId];
                 if (data.role === 'judge') {
-                    room.judges[data.judgeId] = { red: data.mode === 'kata' ? 100 : 0, blue: data.mode === 'kata' ? 100 : 0 };
+                    room.judges[data.judgeId] = { red: 0, blue: 0 };
                 }
+                if(data.role === 'main'){
+                    room.mainjudge = { timer: true, showdown:false, redWarnig: 0,blueWarnig: 0,redFouls: 0, blueFouls: 0 };
+                }
+
                 console.log('JOIN ROOM',room);
                 break;
+                
 
             case 'update':
                 const judge = rooms[ws.roomId].judges[data.judgeId];
                 if (judge) {
-                    if (rooms[ws.roomId].mode === 'kumite') {
-                        judge.red += data.red;
-                        judge.blue += data.blue;
-                    } else if (rooms[ws.roomId].mode === 'kata') {
-                        judge.red -= data.red * 2; // 減点
-                        judge.blue -= data.blue * 2; // 減点
-                    }
+                    
+                    judge.red += data.red;
+                    judge.blue += data.blue;
+                   
                 }
                 console.log('UPDATE',rooms);
                 break;

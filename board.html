@@ -34,6 +34,7 @@
         <p class="points">青のポイント: <span id="totalBluePoints">0</span></p>
     </div>
     <button id="resetButton">リセット</button>
+    <script src="js/wsurl.js"></script>
     <script>
         // URLパラメータから部屋IDを取得
         const urlParams = new URLSearchParams(window.location.search);
@@ -43,7 +44,7 @@
         document.title = `部屋 ${roomId} | スコアボード`;
         document.querySelector('#roomHeader').textContent = `現在の部屋: ${roomId}`;
 
-        const ws = new WebSocket('https://tech-on-judge-ws.onrender.com');
+        const ws = new WebSocket(wsurl);
 
         ws.onopen = () => {
             ws.send(JSON.stringify({ type: 'joinRoom', roomId, mode: roomId.startsWith('kata') ? 'kata' : 'kumite' }));

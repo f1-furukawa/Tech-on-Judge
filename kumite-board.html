@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>試合スコアボード</title>
+    <style>
+        body {
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: #fff;
+        }
+        div{
+            /* border : 1px solid white; */
+        }
+        .scoreboard {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            background-color: black;
+            color: white;
+        }
+        .left-panel {
+            width: 50%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: space-between;
+            padding: 20px;
+        }
+        .right-panel {
+            width: 50%;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            padding: 20px;
+            position: relative;
+        }
+        .logo {
+            width: 40%;
+        }
+        .logo-container {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+        }
+        .timer {
+            font-size: 20vmin;
+            font-weight: bold;
+        }
+        .upper-block, .lower-block {
+            display: flex;
+            justify-content: space-between;
+            width: 100%;
+            position: absolute;
+            font-weight: bold;
+        }
+        .upper-left, .lower-left{
+            font-size: 6vmin;
+        }
+        .upper-right, .lower-right {
+            font-size: 20vmin;
+        }
+        .upper-block {
+            color: red;
+            top: 2%;
+            right: 2%;
+        }
+
+        .upper-left, .upper-right {
+            display: flex;
+            flex-direction: column;
+            /* justify-content: flex-end; */
+            align-items: flex-end; /* 追加 */
+            text-align: left;
+        }
+        .upper-right {
+            text-align: right;
+            margin-left: auto;
+        }
+        
+        .lower-block {
+            
+            position: absolute; /* 画面下端に固定 */
+            bottom: 0;
+            display: flex;
+            justify-content: space-between;
+            color: blue;
+            bottom: 2%;
+            right: 2%;
+        }
+        .lower-left, .lower-right {
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-end;
+            align-items: flex-end; /* 追加 */
+            text-align: left;
+        }
+        
+        .lower-right {
+            text-align: right;
+            /* margin-left: auto;     */
+        }
+        
+        .middle-block {
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+        .judges-bar-container {
+            display: flex;
+            gap: 20px;
+        }
+        .judge-bar {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 100%;
+        }
+        .is-show
+        {
+            display: none;
+        }
+        .bar-group {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .bar {
+            width: 70px;
+            height: 20px;
+            margin: 2px;
+        }
+        .bar.red { background-color: red; }
+        .bar.blue { background-color: blue; }
+        .bar.black { background-color: black; }
+        .bar-divider {
+            width: 80px;
+            height: 5px;
+            background-color: white;
+            margin: 5px 0;
+        }
+        .score-box {
+            background: #ccc;
+            border-radius: 5px;
+            color: black;
+            padding: 5px;
+            font-size: 30px;
+            font-weight: bold;
+            width: 80px;
+            text-align: center;
+        }
+        .judge-id{
+            font-size: 2vh;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <div class="scoreboard">
+        <div class="left-panel">
+            <img src="img/logo_tec.png" class="logo" alt="ITF Logo">
+            <div id="roomname"></div>
+            <div class="timer">3:00</div>
+            <div class="logo-container">
+                <img src="img/logo_itf.png" class="logo" alt="ITF Logo">
+                <img src="img/logo_main.png" class="logo" alt="Mail Logo">
+            </div>
+        </div>
+        <div class="right-panel">
+            <div class="upper-block">
+                <div class="upper-left">
+                    <div>Warnings: 1</div>
+                    <div>Fouls: 0</div>
+                </div>
+                <div class="upper-right" id="totalRedPoints">1</div>
+            </div>
+            <div class="middle-block">
+                <div id="judges-bar-container" class="judges-bar-container">
+                    <!-- <div class="judge-bar" id="jid_bar">
+                        <div class="bar-group">
+                            <div class="bar red r4"></div>
+                            <div class="bar red r3 r4"></div>
+                            <div class="bar red r2 r3 r4"></div>
+                            <div class="bar red r1 r2 r3 r4"></div>
+                        </div>
+                        <div class="bar-divider"></div>
+                        <div class="bar-group">
+                            <div class="bar blue b1 b2 b3 b4"></div>
+                            <div class="bar blue b2 b3 b4"></div>
+                            <div class="bar blue b3 b4"></div>
+                            <div class="bar blue b4"></div>
+                        </div>
+                        <div class="score-box">2-4</div>
+                    </div> -->
+                </div>
+            </div>
+            <div class="lower-block">
+                <div class="lower-left">
+                    <div>Warnings: 1</div>
+                    <div>Fouls: 0</div>
+                </div>
+                <div class="lower-right" id="totalBluePoints">2</div>
+            </div>
+        </div>
+    </div>
+    <script src="js/wsurl.js"></script>
+    <script src="js/kumite.js"></script>
+</body>
+</html>
