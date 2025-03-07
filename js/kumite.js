@@ -19,15 +19,13 @@ ws.onmessage = (event) => {
 
     if (data.type === 'scores') {
         const judgesBarContainer = document.getElementById('judges-bar-container');
-        
-
-        // const judgeScores = document.getElementById('judgeScores');
-        // judgeScores.innerHTML = ''; // テーブルをクリア
-
+      
         let totalRedPoints = 0;
         let totalBluePoints = 0;
 
         const scores = data.Scores;
+
+        removeJudgeBar(scores);
 
         scores.forEach(score => {
             const { judgeId, red, blue, diff } = score;
@@ -61,16 +59,50 @@ ws.onmessage = (event) => {
             } 
         });
 
+        let mainjudge = data.Controls;
+        
+        console.log(mainjudge);
+        document.getElementById('redWarning').textContent = mainjudge.redWarnig ?? 0;
+        document.getElementById('blueWarning').textContent = mainjudge.blueWarnig ?? 0;
+        document.getElementById('redFouls').textContent = mainjudge.redFouls ?? 0;
+        document.getElementById('blueFouls').textContent = mainjudge.blueFouls ?? 0;
+
         // 合計ポイントを更新
         document.getElementById('totalRedPoints').textContent = totalRedPoints;
         document.getElementById('totalBluePoints').textContent = totalBluePoints;
     }
+
+    if(data.type === 'Timer')
+    {
+        console.log(data.Controls.timer);
+        switch (data.Controls.timer) {
+            case 'start':
+                resumeCountdown();
+                break;
+            case 'stop':
+                pauseCountdown();
+                break;
+            case 'reset':
+                timerReset();
+                break;
+        }
+    }
 };
+
 
 document.getElementById('resetButton').addEventListener('click', () => {
     ws.send(JSON.stringify({ type: 'reset' }));
     document.getElementById('judges-bar-container').innerHTML = '';
 });
+
+function isDebugEmpty(obj) {
+    return (
+        obj &&
+        typeof obj === "object" &&
+        Object.keys(obj).length === 0 &&
+        (obj.constructor === Object || obj.constructor === undefined)
+    );
+}
 
 function makeJadgeBar(container,jid)
 {
@@ -100,6 +132,21 @@ function makeJadgeBar(container,jid)
     }
 }
 
+function removeJudgeBar(scores)
+{
+    // すべての judge-bar 要素を取得
+    const judgeBars = document.querySelectorAll(".judge-bar");
+    const validJudgeIds = scores.map(score => score.judgeId);
+
+    // 各 judge-bar 要素をチェックし、該当しないものを削除
+    judgeBars.forEach(judgeBar => {
+        if (!validJudgeIds.includes(judgeBar.id)) {
+            judgeBar.remove(); // 削除
+        }
+    });
+
+}
+
 function setScoreBar(judgeId,onclass,colorclass)
 {
     console.log(judgeId,onclass,colorclass);
@@ -113,7 +160,3 @@ function setScoreBar(judgeId,onclass,colorclass)
         });
     }
 }
-
-// document.getElementById('resetButton').addEventListener('click', () => {
-//     ws.send(JSON.stringify({ type: 'reset' }));
-// });

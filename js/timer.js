@@ -41,11 +41,15 @@ function timerControle() {
     }
 }
 
+function timerReset(){
+    remainingTime = settingtime;
+    updateTimerDisplay(); 
+    if (!isPaused) pauseCountdown(); 
+}
+
 document.getElementById("timer").addEventListener("click", timerControle);
 document.getElementById("resetButton").addEventListener("click", 
     function(){
-        remainingTime = settingtime;
-        updateTimerDisplay(); 
-        if (!isPaused) pauseCountdown(); 
+        timerReset();
     });
 
