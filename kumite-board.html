@@ -19,9 +19,15 @@
         .scoreboard {
             width: 100%;
             height: 100%;
+            flex-direction: column;
             display: flex;
             background-color: black;
             color: white;
+        }
+        .main{
+            display: flex;
+            flex-direction: row;
+            height: 95vh;      
         }
         .left-panel {
             width: 50%;
@@ -159,14 +165,21 @@
             font-size: 2vh;
             color: white;
         }
+        .control-panel {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 5vh;
+        }
     </style>
 </head>
 <body>
     <div class="scoreboard">
+        <div class="main">
         <div class="left-panel">
             <img src="img/logo_tec.png" class="logo" alt="ITF Logo">
             <div id="roomname"></div>
-            <div class="timer">3:00</div>
+            <div class="timer" id="timer">03:00</div>
             <div class="logo-container">
                 <img src="img/logo_itf.png" class="logo" alt="ITF Logo">
                 <img src="img/logo_main.png" class="logo" alt="Mail Logo">
@@ -175,8 +188,8 @@
         <div class="right-panel">
             <div class="upper-block">
                 <div class="upper-left">
-                    <div>Warnings: 1</div>
-                    <div>Fouls: 0</div>
+                    <div>Warnings: <span id="redWarning">1</span></div>
+                    <div>Fouls: <span id="redFouls">2</span></div>
                 </div>
                 <div class="upper-right" id="totalRedPoints">1</div>
             </div>
@@ -202,14 +215,21 @@
             </div>
             <div class="lower-block">
                 <div class="lower-left">
-                    <div>Warnings: 1</div>
-                    <div>Fouls: 0</div>
+                    <div>Warnings: <span id="blueWarning">3</span></div>
+                    <div>Fouls: <span id="blueFouls">4</span></div>
                 </div>
                 <div class="lower-right" id="totalBluePoints">2</div>
             </div>
+             
         </div>
     </div>
+        <div class="control-panel">
+            <button id="resetButton">リセット</button>
+        </div>
+    </div>
+    
     <script src="js/wsurl.js"></script>
+    <script src="js/timer.js"></script>
     <script src="js/kumite.js"></script>
 </body>
 </html>

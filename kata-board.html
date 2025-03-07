@@ -83,7 +83,7 @@
         }
 
         .judge-scores-container {
-            height: 30vh;
+            height: 25vh;
             display: flex;
             justify-content: space-around;
             flex-wrap: wrap;
@@ -123,6 +123,12 @@
             font-size: 2vh;
             color: white;
         }
+        .control-panel {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 5vh;
+        }
     </style>
 </head>
 <body>
@@ -141,7 +147,7 @@
         </div>
         
         <!-- スコア表示部分 -->
-        <div class="score">
+        <div class="score" id="score">
             <div class="blue" id="totalBluePoints">0</div>
             <div class="even" id="totalEvenPoints">0</div>
             <div class="red"  id="totalRedPoints">0</div>
@@ -170,6 +176,9 @@
                 </div>
             </div>
             -->
+        </div>
+        <div class="control-panel">
+            <button id="resetButton">リセット</button>
         </div>
     </div>
     <script src="js/wsurl.js"></script>
