@@ -5,7 +5,7 @@ console.log(roomId); // "kata-roomA" など
 
 const judgeId = `main`;
 
-document.getElementById('judgeId').textContent = judgeId;
+document.getElementById('roomId').textContent = roomId;
 
 ws.onopen = () => {
     ws.send(JSON.stringify({ type: 'joinRoom', roomId, judgeId, role:'main' }));
@@ -23,28 +23,27 @@ ws.onmessage = (event) => {
 
     if (data.type === 'scores') {
         const scores = data.Scores;
-        scores.forEach(score => {
-            const judgeScores = document.getElementById('judgeScores');
-                judgeScores.innerHTML = ''; // テーブルをクリア
+        console.log(scores);
+        const judgeScores = document.getElementById('judgeScores');
+        judgeScores.innerHTML = ''; // テーブルをクリア
 
-                const scores =data.Scores;
+        Object.values(scores).forEach(score => {
+            
+            const { judgeId, red, blue, diff } = score;
 
-                scores.forEach(score => {
-                    const { judgeId, red, blue, diff } = score;
-
-                    // ジャッジごとのスコアをテーブルに追加
-                    const row = `<tr>
-                        <td>${judgeId}</td>
-                        <td>${red}</td>
-                        <td>${blue}</td>
-                        <td>
-                            <input type="hidden" class="targetjudgeid" value='${judgeId}'>
-                            <button class="scorereset" >スコアリセット</button>
-                            <button class="remove" >ジャッジ退出</button>
-                        </td>
-                    </tr>`;
-                    judgeScores.innerHTML += row;
-                });
+            // ジャッジごとのスコアをテーブルに追加
+            const row = `<tr>
+                <td>${judgeId}</td>
+                <td>${red}</td>
+                <td>${blue}</td>
+                <td>
+                    <input type="hidden" class="targetjudgeid" value='${judgeId}'>
+                    <button class="scorereset" >スコアリセット</button>
+                    <button class="remove" >ジャッジ退出</button>
+                </td>
+            </tr>`;
+            judgeScores.innerHTML += row;
+                
         });
     }
 

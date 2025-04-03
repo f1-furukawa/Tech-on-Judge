@@ -7,14 +7,15 @@ const rooms = {}; // 部屋ごとのスコア管理
 
 function broadcastScores(roomId) {
     const room = rooms[roomId];
-    const results = [];
+    const results = {};
 
     for (const [judgeId, data] of Object.entries(room.judges)) {
         const diff = data.red - data.blue;
         const diff2 = data.red2 - data.blue2;
-        results.push({ judgeId, red: data.red, blue: data.blue, diff ,red2:data.red2, blue2: data.blue2, diff2});
+        results[judgeId] = { judgeId, red: data.red, blue: data.blue, diff ,red2:data.red2, blue2: data.blue2, diff2};
+        //results.push({ judgeId, red: data.red, blue: data.blue, diff ,red2:data.red2, blue2: data.blue2, diff2});
     }
-    console.log('score',results);
+    console.log('scores',results);
     wss.clients.forEach(client => {
         if (client.readyState === WebSocket.OPEN && client.roomId === roomId) {
             

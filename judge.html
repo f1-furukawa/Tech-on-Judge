@@ -1,49 +1,245 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ジャッジ</title>
-    <style>
-        body { font-family: Arial, sans-serif; text-align: center; margin: 20px; }
-        button { margin: 5px; padding: 10px 20px; font-size: 16px; }
-        .score { font-size: 20px; margin: 10px; }
-    </style>
+  <meta charset="UTF-8">
+  <title>ジャッジ画面</title>
+  <style>
+
+    html, body {
+      touch-action: manipulation;
+    }
+
+    body {
+      margin: 0;
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      font-family: sans-serif;
+    }
+
+    .container {
+      display: flex;
+      flex: 1;
+    }
+
+    .area {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .left {
+      background-color: #000;
+      color: #fff;
+      width: 35%;
+    }
+
+    .right {
+      background-color: #000;
+      color: #fff;
+      width: 35%;
+    }
+
+    .center {
+      background-color: #000;
+      color: #fff;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      padding: 1vw;
+      box-sizing: border-box;
+    }
+
+    .center-header {
+      font-size: 3vw;
+      margin-bottom: 1vw;
+      text-align: center;
+    }
+
+    .center-judge {
+      font-size: 2vw;
+      margin-bottom: 2vw;
+      text-align: center;
+    }
+
+    .score-section {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 2vw;
+    }
+
+    .score {
+      flex: 1;
+      text-align: center;
+      font-size: 4vw;
+    }
+
+    .button-section {
+      display: flex;
+      justify-content: space-between;
+      margin-top: auto;
+    }
+
+    /* 基本ボタンスタイル */
+    .btn {
+      flex: 1;
+      margin: 0 0.5vw;
+      height: 10vw;
+      font-size: 2.5vw;
+      border: none;
+      border-radius: 0.5vw;
+      cursor: pointer;
+      color: #fff;
+      transition: all 0.2s ease;
+      box-shadow: 0 0.5vw 1vw rgba(0, 0, 0, 0.5);
+    }
+
+    .btn-red {
+      background-color: #f00;
+    }
+
+    .btn-blue {
+      background-color: #00f;
+    }
+
+    /* ボタン押下時の動き */
+    .btn:active {
+      box-shadow: inset 0 0.3vw 0.5vw rgba(0, 0, 0, 0.6);
+      transform: translateY(0.2vw);
+    }
+
+    /* 左右のボタン */
+    .side-button {
+      width: 80%;
+      height: 35vw;
+      font-size: 3vw;
+      border: none;
+      border-radius: 1vw;
+      cursor: pointer;
+      color: #fff;
+      transition: all 0.2s ease;
+      box-shadow: 0 0.5vw 1vw rgba(0, 0, 0, 0.5);
+    }
+
+    .left-button {
+      background-color: #f00;
+    }
+
+    .right-button {
+      background-color: #00f;
+    }
+
+    .side-button:active {
+      box-shadow: inset 0 0.3vw 0.5vw rgba(0, 0, 0, 0.6);
+      transform: translateY(0.2vw);
+    }
+
+  </style>
 </head>
 <body>
-    <h1>ジャッジ画面</h1>
-    <p>ジャッジID: <span id="judgeId"></span></p>
-    <div>
-        <h2>赤の操作</h2>
-        <button onclick="updateScore(1, 0)">赤 +1</button>
-        <button onclick="updateScore(-1, 0)">赤 -1</button>
+  <div class="container">
+    
+    <!-- 左側エリア -->
+    <div class="area left">
+      <button class="side-button left-button plus" onclick="updateScore(1, 0)">＋</button>
     </div>
-    <div>
-        <h2>青の操作</h2>
-        <button onclick="updateScore(0, 1)">青 +1</button>
-        <button onclick="updateScore(0, -1)">青 -1</button>
+
+    <!-- 真ん中エリア -->
+    <div class="center">
+      <div class="center-header" id="roomId">部屋の名前</div>
+      <div class="center-judge" id="judgeId">審判ID: 12345</div>
+      
+      <div class="score-section">
+        <div class="score" id="redScore">10</div>
+        <div class="score">-</div>
+        <div class="score" id="blueScore">20</div>
+      </div>
+      
+      <div class="button-section">
+        <button class="btn btn-red minus" onclick="updateScore(-1, 0)">ー</button>
+        <button class="btn btn-blue minus" onclick="updateScore(0, -1)">ー</button>
+      </div>
     </div>
-    <script src="js/wsurl.js"></script>
-    <script>
-        const ws = new WebSocket(wsurl);
-        const urlParams = new URLSearchParams(window.location.search);
-        const roomId = urlParams.get('roomId');
-        console.log(roomId); // "kata-roomA" など
 
-        const judgeId = `judge-${Math.floor(Math.random() * 1000)}`;
+    <!-- 右側エリア -->
+    <div class="area right">
+      <button class="side-button right-button plus" onclick="updateScore(0, 1)">＋</button>
+    </div>
 
-        document.getElementById('judgeId').textContent = judgeId;
+  </div>
+  <script src="js/wsurl.js"></script>
+  <script>
+    const ws = new WebSocket(wsurl);
+    const urlParams = new URLSearchParams(window.location.search);
+    const roomId = urlParams.get('roomId');
+    console.log(roomId); // "kata-roomA" など
 
-        ws.onopen = () => {
-            ws.send(JSON.stringify({ type: 'joinRoom', roomId, judgeId, role:'judge', mode: roomId.startsWith('kata') ? 'kata' : 'kumite' }));
-        };
+    const judgeId = `judge-${Math.floor(Math.random() * 1000)}`;
 
-        function updateScore(red, blue) {
-            const data = JSON.stringify({ type: 'update', judgeId, red, blue });
-            console.log(data);
-            ws.send(data);
+    document.getElementById('judgeId').textContent = judgeId;
+
+    const mode = roomId.startsWith('kata') ? 'kata' : 'kumite';
+
+    document.title = `${roomId}-${judgeId}`;
+    document.getElementById('roomId').textContent = roomId;
+    
+    if(mode == 'kata')
+    {
+        document.querySelectorAll('.plus').forEach(function(e) {e.textContent = 'ー'});
+        document.querySelectorAll('.minus').forEach(function(e) {e.textContent = '＋'});
+    }
+
+    ws.onopen = () => {
+        ws.send(JSON.stringify({ type: 'joinRoom', roomId, judgeId, role:'judge', mode}));
+    };
+
+    function updateScore(red, blue) {
+        const data = JSON.stringify({ type: 'update', judgeId, red, blue });
+        console.log(data);
+        ws.send(data);
+    }
+
+    ws.onmessage = (event) => {
+        const data = JSON.parse(event.data);
+        console.log('scores',data);
+
+        if (data.type === 'scores') {
+            const judgesBarContainer = document.getElementById('judges-bar-container');
+        
+            let totalRedPoints = 0;
+            let totalBluePoints = 0;
+
+            const scores = data.Scores;
+            console.log(scores);
+
+            // scores.forEach(score => {
+            //     if(score.judgeId == judgeId)
+            //     {
+            //         document.getElementById('redScore').textContent = getScore(score.red);
+            //         document.getElementById('blueScore').textContent = getScore(score.blue);
+            //     }
+            // });
+
+            score = scores[judgeId];
+            if(score)
+            {
+                document.getElementById('redScore').textContent = getScore(score.red);
+                document.getElementById('blueScore').textContent = getScore(score.blue);
+            }
         }
+    };
 
-    </script>
+    
+    function getScore(point)
+    {
+        if(mode == 'kata')
+        {
+            point = point ?? 100
+            return ((100 - (point * 2)) / 10).toFixed(1);
+        }
+        point = point ?? 0;
+        return point;
+    }
+  </script>
 </body>
 </html>
