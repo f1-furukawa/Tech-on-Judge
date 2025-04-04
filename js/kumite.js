@@ -27,7 +27,7 @@ ws.onmessage = (event) => {
 
         removeJudgeBar(scores);
 
-        scores.forEach(score => {
+        Object.values(scores).forEach(score => {
             const { judgeId, red, blue, diff } = score;
             makeJadgeBar(judgesBarContainer,judgeId);
             
@@ -136,7 +136,7 @@ function removeJudgeBar(scores)
 {
     // すべての judge-bar 要素を取得
     const judgeBars = document.querySelectorAll(".judge-bar");
-    const validJudgeIds = scores.map(score => score.judgeId);
+    const validJudgeIds = Object.keys(scores);
 
     // 各 judge-bar 要素をチェックし、該当しないものを削除
     judgeBars.forEach(judgeBar => {
