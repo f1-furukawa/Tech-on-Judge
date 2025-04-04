@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>index</title>
+  <style>
+    body {
+      font-family: sans-serif;
+      padding: 20px;
+    }
+
+    h1 {
+      margin-bottom: 20px;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    tr {
+      border-top: 2px solid #ccc;
+      border-bottom: 2px solid #ccc;
+    }
+
+    tr:nth-child(even) {
+      background-color: #f9f9f9;
+    }
+
+    td {
+      padding: 12px 10px;
+      vertical-align: middle;
+    }
+
+    .btn {
+      display: inline-block;
+      background-color: #007bff;
+      color: #fff;
+      padding: 6px 12px;
+      margin: 2px;
+      text-decoration: none;
+      border-radius: 6px;
+      font-size: 14px;
+      transition: background-color 0.2s;
+    }
+
+    .btn:hover {
+      background-color: #0056b3;
+    }
+
+    .judge-btn {
+      font-size: 16px;
+      padding: 10px 16px;
+      margin: 4px 8px;
+    }
+  </style>
+</head>
+<body>
+  <h1>型</h1>
+  <a href="index.html">戻る</a>
+  <table id="courtTable"></table>
+
+  <script>
+    // ▼ 設定
+    const courtCount = 3;
+    const judgeCount = 5;
+    const eventName = "kata";
+
+    const table = document.getElementById("courtTable");
+
+    for (let i = 0; i < courtCount; i++) {
+      const courtLetter = String.fromCharCode(65 + i);
+      const courtId = `${eventName}-${courtLetter}`;
+      const tr = document.createElement("tr");
+
+      // コート名
+      const tdCourt = document.createElement("td");
+      tdCourt.textContent = `コート${courtLetter}`;
+      tr.appendChild(tdCourt);
+
+      // スコアボード
+      const tdScore = document.createElement("td");
+      const scoreLink = document.createElement("a");
+      scoreLink.href = `${eventName}-board.html?courtId=${courtId}`;
+      scoreLink.textContent = "スコアボード";
+      scoreLink.target = "_blank";
+      scoreLink.className = "btn";
+      tdScore.appendChild(scoreLink);
+      tr.appendChild(tdScore);
+
+      // 本部
+      const tdMain = document.createElement("td");
+      const mainLink = document.createElement("a");
+      mainLink.href = `${eventName}-hq.html?courtId=${courtId}`;
+      mainLink.textContent = "本部";
+      mainLink.target = "_blank";
+      mainLink.className = "btn";
+      tdMain.appendChild(mainLink);
+      tr.appendChild(tdMain);
+
+      // ジャッジ
+      const tdJudges = document.createElement("td");
+      for (let j = 0; j < judgeCount; j++) {
+        const judgeLetter = String.fromCharCode(65 + j);
+        const judgeLink = document.createElement("a");
+        judgeLink.href = `judge.html?courtId=${courtId}&jid=${judgeLetter}`;
+        judgeLink.textContent = judgeLetter;
+        judgeLink.target = "_blank";
+        judgeLink.className = "btn judge-btn";
+        tdJudges.appendChild(judgeLink);
+      }
+      tr.appendChild(tdJudges);
+
+      table.appendChild(tr);
+    }
+  </script>
+</body>
+</html>

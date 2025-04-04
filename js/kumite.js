@@ -1,16 +1,15 @@
 // URLパラメータから部屋IDを取得
 const urlParams = new URLSearchParams(window.location.search);
-const roomId = urlParams.get('roomId');
+const courtId = urlParams.get('courtId');
 
 // タイトルと見出しを動的に設定
-document.title = `部屋 ${roomId} | スコアボード`;
-document.querySelector('#roomname').textContent = `${roomId}`;
+document.title = `コート ${courtId} | スコアボード`;
+document.querySelector('#courtname').textContent = `${courtId}`;
 
-//const ws = new WebSocket('https://tech-on-judge-ws.onrender.com');
 const ws = new WebSocket(wsurl);
 
 ws.onopen = () => {
-    ws.send(JSON.stringify({ type: 'joinRoom', roomId, mode: roomId.startsWith('kata') ? 'kata' : 'kumite' }));
+    ws.send(JSON.stringify({ type: 'joincourt', courtId, mode: courtId.startsWith('kata') ? 'kata' : 'kumite' }));
 };
 
 ws.onmessage = (event) => {

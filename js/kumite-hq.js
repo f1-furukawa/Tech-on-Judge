@@ -1,50 +1,41 @@
 const ws = new WebSocket(wsurl);
 const urlParams = new URLSearchParams(window.location.search);
-const roomId = urlParams.get('roomId');
-console.log(roomId); // "kata-roomA" など
+const courtId = urlParams.get('courtId');
+console.log(courtId); // "kata-courtA" など
 
 const judgeId = `main`;
 
-document.getElementById('roomId').textContent = roomId;
+document.getElementById('courtId').textContent = courtId;
 
 ws.onopen = () => {
-    ws.send(JSON.stringify({ type: 'joinRoom', roomId, judgeId, role:'main' }));
+    ws.send(JSON.stringify({ type: 'joincourt', courtId, judgeId, role:'main' }));
 };
 
-function showdown(command)
+function timer(command)
 {
-    const data = JSON.stringify({type: 'Showdown',command})
-    console.log('showdown',data);
-    ws.send(data);
-}
-
-function numberofmatch(number)
-{
-    const data = JSON.stringify({type: 'NumberOfMatche',number})
-    console.log('NumberOfMatche',data);
+    const data = JSON.stringify({type: 'timer',command})
     ws.send(data);
 }
 
 ws.onmessage = (event) => {
     const data = JSON.parse(event.data);
-    console.log('onmessage',data);
+    console.log(data);
 
     if (data.type === 'scores') {
         const scores = data.Scores;
+        console.log(scores);
         const judgeScores = document.getElementById('judgeScores');
         judgeScores.innerHTML = ''; // テーブルをクリア
 
-        Object.values(scores).forEach(score => {
-            const judgeScores = document.getElementById('judgeScores');
-            judgeScores.innerHTML = ''; // テーブルをクリア
-
+        scores.forEach(score => {
+            
             const { judgeId, red, blue, diff } = score;
 
             // ジャッジごとのスコアをテーブルに追加
             const row = `<tr>
                 <td>${judgeId}</td>
-                <td>${getKataScore(red)}</td>
-                <td>${getKataScore(blue)}</td>
+                <td>${red}</td>
+                <td>${blue}</td>
                 <td>
                     <input type="hidden" class="targetjudgeid" value='${judgeId}'>
                     <button class="scorereset" >スコアリセット</button>
@@ -52,10 +43,17 @@ ws.onmessage = (event) => {
                 </td>
             </tr>`;
             judgeScores.innerHTML += row;
-            
+                
         });
     }
+
+
 };
+
+function updateWarningFoul(isFouls,red,blue){
+    const data = JSON.stringify({type:'Fouls',isFouls,red,blue});
+    ws.send(data);
+}
 
 document.addEventListener("click", (event) => {
     if (event.target.matches(".scorereset, .remove")) {
@@ -71,7 +69,3 @@ document.addEventListener("click", (event) => {
     }
 });
 
-function getKataScore(point)
-{
-    return ((100 - (point * 2)) / 10).toFixed(1);
-}

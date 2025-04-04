@@ -3,40 +3,40 @@ const port = process.env.PORT || 8181;
 console.log('port',port);
 const wss = new WebSocket.Server({ port: port });
 
-const rooms = {}; // 部屋ごとのスコア管理
+const courts = {}; // 部屋ごとのスコア管理
 
-function broadcastScores(roomId) {
-    const room = rooms[roomId];
-    const results = {};
+function broadcastScores(courtId) {
+    const court = courts[courtId];
+    const results = [];
 
-    for (const [judgeId, data] of Object.entries(room.judges)) {
+    for (const [judgeId, data] of Object.entries(court.judges)) {
         const diff = data.red - data.blue;
         const diff2 = data.red2 - data.blue2;
-        results[judgeId] = { judgeId, red: data.red, blue: data.blue, diff ,red2:data.red2, blue2: data.blue2, diff2};
-        //results.push({ judgeId, red: data.red, blue: data.blue, diff ,red2:data.red2, blue2: data.blue2, diff2});
+        //results[judgeId] = { judgeId, red: data.red, blue: data.blue, diff ,red2:data.red2, blue2: data.blue2, diff2};
+        results.push({ judgeId, red: data.red, blue: data.blue, diff ,red2:data.red2, blue2: data.blue2, diff2});
     }
     console.log('scores',results);
     wss.clients.forEach(client => {
-        if (client.readyState === WebSocket.OPEN && client.roomId === roomId) {
+        if (client.readyState === WebSocket.OPEN && client.courtId === courtId) {
             
             client.send(JSON.stringify({
                 type: 'scores',
                 Scores: results,
-                Controls: room.mainjudge,
+                Controls: court.mainjudge,
             }));
         }
     });
 }
 
-function broadcastMainJudge(type,roomId)
+function broadcastMainJudge(type,courtId)
 {
-    const room = rooms[roomId];
-    console.log(type,room.mainjudge);
+    const court = courts[courtId];
+    console.log(type,court.mainjudge);
     wss.clients.forEach(client => {
-        if (client.readyState === WebSocket.OPEN && client.roomId === roomId) {
+        if (client.readyState === WebSocket.OPEN && client.courtId === courtId) {
             client.send(JSON.stringify({
                 type: type,
-                Controls: room.mainjudge,
+                Controls: court.mainjudge,
             }));
         }
     });
@@ -50,27 +50,27 @@ function createMainJudge()
 wss.on('connection', ws => {
     ws.on('message', message => {
         const data = JSON.parse(message);
-        console.log(data,ws.roomId);
+        console.log(data,ws.courtId);
         switch (data.type) {
-            case 'joinRoom':
-                ws.roomId = data.roomId;
-                if (!rooms[data.roomId]) {
-                    rooms[data.roomId] = { mode: data.mode, judges: {} ,mainjudge:createMainJudge()};
+            case 'joincourt':
+                ws.courtId = data.courtId;
+                if (!courts[data.courtId]) {
+                    courts[data.courtId] = { mode: data.mode, judges: {} ,mainjudge:createMainJudge()};
                 }
                 
-                const room = rooms[ws.roomId];
+                const court = courts[ws.courtId];
                 if (data.role === 'judge') {
-                    room.judges[data.judgeId] = { red: 0, blue: 0, red2: 0, blue2:0 };
+                    court.judges[data.judgeId] = { red: 0, blue: 0, red2: 0, blue2:0 };
                 }
                 if(data.role === 'main'){
-                    room.mainjudge = createMainJudge();
+                    court.mainjudge = createMainJudge();
                 }
 
-                console.log('JOIN ROOM',room);
+                console.log('JOIN COURT',court);
                 break;
             case 'update':
-                const judge = rooms[ws.roomId].judges[data.judgeId];
-                const numberOfMatche = rooms[ws.roomId].mainjudge.numberOfMatche;
+                const judge = courts[ws.courtId].judges[data.judgeId];
+                const numberOfMatche = courts[ws.courtId].mainjudge.numberOfMatche;
                 if (judge) {
                     if(numberOfMatche === 1)
                     {
@@ -83,10 +83,10 @@ wss.on('connection', ws => {
                         judge.blue2 += data.blue;
                     }
                 }
-                console.log('UPDATE',rooms);
+                console.log('UPDATE',courts);
                 break;
             case 'judgereset':
-                const target = rooms[ws.roomId].judges[data.judgeId];
+                const target = courts[ws.courtId].judges[data.judgeId];
                 if(target){
                     target.red = 0;
                     target.blue = 0;
@@ -96,14 +96,14 @@ wss.on('connection', ws => {
                 break;
 
             case 'judgeremove':
-                delete rooms[ws.roomId].judges[data.judgeId];
+                delete courts[ws.courtId].judges[data.judgeId];
                 break;
             case 'timer':
-                rooms[ws.roomId].mainjudge.timer = data.command;
-                broadcastMainJudge('Timer',ws.roomId);
+                courts[ws.courtId].mainjudge.timer = data.command;
+                broadcastMainJudge('Timer',ws.courtId);
                 return;
             case 'Fouls':
-                const main = rooms[ws.roomId].mainjudge;
+                const main = courts[ws.courtId].mainjudge;
                 if(data.isFouls){
                     main.redFouls += data.red;
                     main.blueFouls += data.blue;
@@ -115,18 +115,18 @@ wss.on('connection', ws => {
                 }
                 break;
             case 'Showdown':
-                rooms[ws.roomId].mainjudge.showdown = (data.command === 'show');
-                broadcastMainJudge('Showdown',ws.roomId);
+                courts[ws.courtId].mainjudge.showdown = (data.command === 'show');
+                broadcastMainJudge('Showdown',ws.courtId);
                 return;
             case 'NumberOfMatche':
-                rooms[ws.roomId].mainjudge.numberOfMatche = data.number;
+                courts[ws.courtId].mainjudge.numberOfMatche = data.number;
                 break;
             case 'reset':
-                rooms[ws.roomId].judges = {};
+                courts[ws.courtId].judges = {};
                 break;
         }
 
-        broadcastScores(ws.roomId);
+        broadcastScores(ws.courtId);
     });
 });
 

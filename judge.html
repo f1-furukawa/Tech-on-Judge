@@ -146,7 +146,7 @@
 
     <!-- 真ん中エリア -->
     <div class="center">
-      <div class="center-header" id="roomId">部屋の名前</div>
+      <div class="center-header" id="courtId">部屋の名前</div>
       <div class="center-judge" id="judgeId">審判ID: 12345</div>
       
       <div class="score-section">
@@ -171,17 +171,18 @@
   <script>
     const ws = new WebSocket(wsurl);
     const urlParams = new URLSearchParams(window.location.search);
-    const roomId = urlParams.get('roomId');
-    console.log(roomId); // "kata-roomA" など
 
-    const judgeId = `judge-${Math.floor(Math.random() * 1000)}`;
+    const courtId = urlParams.get('courtId');
+    console.log(courtId); // "kata-courtA" など
+
+    const judgeId = urlParams.get('jid');
 
     document.getElementById('judgeId').textContent = judgeId;
 
-    const mode = roomId.startsWith('kata') ? 'kata' : 'kumite';
+    const mode = courtId.startsWith('kata') ? 'kata' : 'kumite';
 
-    document.title = `${roomId}-${judgeId}`;
-    document.getElementById('roomId').textContent = roomId;
+    document.title = `${courtId}-${judgeId}`;
+    document.getElementById('courtId').textContent = courtId;
     
     if(mode == 'kata')
     {
@@ -190,7 +191,7 @@
     }
 
     ws.onopen = () => {
-        ws.send(JSON.stringify({ type: 'joinRoom', roomId, judgeId, role:'judge', mode}));
+        ws.send(JSON.stringify({ type: 'joincourt', courtId, judgeId, role:'judge', mode}));
     };
 
     function updateScore(red, blue) {
@@ -212,20 +213,13 @@
             const scores = data.Scores;
             console.log(scores);
 
-            // scores.forEach(score => {
-            //     if(score.judgeId == judgeId)
-            //     {
-            //         document.getElementById('redScore').textContent = getScore(score.red);
-            //         document.getElementById('blueScore').textContent = getScore(score.blue);
-            //     }
-            // });
-
-            score = scores[judgeId];
-            if(score)
-            {
-                document.getElementById('redScore').textContent = getScore(score.red);
-                document.getElementById('blueScore').textContent = getScore(score.blue);
-            }
+            scores.forEach(score => {
+                if(score.judgeId == judgeId)
+                {
+                    document.getElementById('redScore').textContent = getScore(score.red);
+                    document.getElementById('blueScore').textContent = getScore(score.blue);
+                }
+            });
         }
     };
 
