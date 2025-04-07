@@ -54,10 +54,25 @@ ws.onmessage = (event) => {
 
         const ctrl = data.Controls;
         judgeCountMarks(ctrl.maxJudgeCount);
+        numberofmatchMarks(ctrl.numberOfMatche);
+
     }
 };
 
 function getKataScore(point)
 {
     return ((100 - (point * 2)) / 10).toFixed(1);
+}
+
+function numberofmatchMarks(number)
+{
+    console.log('numberofmatch',number);
+
+    document.querySelectorAll('.nmbtn').forEach((btn) => { 
+        btn.classList.remove('active');
+    });
+
+    document.querySelectorAll(`.nm${number}`).forEach((btn) => {
+        btn.classList.add('active');
+    });
 }

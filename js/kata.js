@@ -19,10 +19,7 @@ ws.onmessage = (event) => {
     if (data.type === 'scores') {
         const judgesBarContainer = document.getElementById('judge-scores-container');
         
-        let totalScores = [
-            { red: 0, blue: 0, even: 0 }, // 1つ目のスコア
-            { red: 0, blue: 0, even: 0 }  // 2つ目のスコア
-        ];
+        let totalScores = { red: 0, blue: 0, even: 0 };
 
         const scores = data.Scores;
 
@@ -39,28 +36,40 @@ ws.onmessage = (event) => {
             judgeBar.querySelectorAll(`.BScore2`)[0].textContent = getKataScore(blue2);
 
             // 差に基づいてポイントを加算
-            if (diff < 0) totalScores[0].red++;
-            else if (diff > 0) totalScores[0].blue++;    
-            else if(diff == 0) totalScores[0].even++;
+            if (diff < 0) totalScores.red++;
+            else if (diff > 0) totalScores.blue++;    
+            else if(diff == 0) totalScores.even++;
 
-            if (diff2 < 0) totalScores[1].red++;
-            else if (diff2 > 0) totalScores[1].blue++;    
-            else if(diff2 == 0) totalScores[1].even++;
+            if(data.Controls.numberOfMatche == 2){
+                if (diff2 < 0) totalScores.red++;
+                else if (diff2 > 0) totalScores.blue++;    
+                else if(diff2 == 0) totalScores.even++;
+            }
         });
 
         // 合計ポイントを更新
-        const key = data.Controls.numberOfMatche - 1;
-        document.getElementById('totalRedPoints').textContent = totalScores[key].red;
-        document.getElementById('totalBluePoints').textContent = totalScores[key].blue;
-        document.getElementById('totalEvenPoints').textContent = totalScores[key].even;
+        document.getElementById('totalRedPoints').textContent = totalScores.red;
+        document.getElementById('totalBluePoints').textContent = totalScores.blue;
+        document.getElementById('totalEvenPoints').textContent = totalScores.even;
+
+        //スコアの表示
+        numberofmatchShows(data.Controls.numberOfMatche);
     }
 
     if(data.type === 'Showdown')
     {
-        visibility = (data.Controls.showdown) ? 'visible' : 'hidden'
 
-        document.getElementById('judge-scores-container').style.visibility = visibility;
-        document.getElementById('score').style.visibility = visibility;
+        document.getElementById('judge-scores-container').style.visibility = 'hidden';
+        document.getElementById('score').style.visibility = 'hidden';
+
+        if(data.Controls.showdown === 'result'){
+            document.getElementById('score').style.visibility = 'visible';
+        }
+
+        if(data.Controls.showdown === 'show'){
+            document.getElementById('judge-scores-container').style.visibility = 'visible';
+            document.getElementById('score').style.visibility = 'visible';
+        }
     }
 };
 
@@ -80,13 +89,13 @@ function makeJadgeBar(container,jid)
                 <div class="judge-row">
                     <div class="judge">
                         <div class="blue-bar bar"></div>
-                        <div class="score-text BScore1">2.4</div>
-                        <div class="score-text BScore2">0.0</div>
+                        <div class="score-text BScore1 s1">2.4</div>
+                        <div class="score-text BScore2 s2">0.0</div>
                     </div>
                     <div class="judge">
                         <div class="red-bar bar"></div>
-                        <div class="score-text RScore1">2.2</div>
-                        <div class="score-text RScore2">0.0</div>
+                        <div class="score-text RScore1 s1">2.2</div>
+                        <div class="score-text RScore2 s2">0.0</div>
                     </div>
                 </div>
             </div>
@@ -107,10 +116,23 @@ function removeJudgeBar(scores)
             judgeBar.remove(); // 削除
         }
     });
+}
 
+function numberofmatchShows(number)
+{
+    document.querySelectorAll('.s2').forEach((score) => {
+        score.style.visibility = (number === 1 ? 'hidden' : 'visible');
+    });
 }
 
 function getKataScore(point)
 {
     return ((100 - (point * 2)) / 10).toFixed(1);
+}
+
+function scoreCalculation(red,blue)
+{
+    const redScore = getKataScore(red);
+    const blueScore = getKataScore(blue);
+    return {redScore,blueScore};
 }

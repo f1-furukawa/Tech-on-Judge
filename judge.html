@@ -210,14 +210,17 @@
             let totalBluePoints = 0;
 
             const scores = data.Scores;
-            console.log(scores);
+            const numberofmatch = data.Controls.numberOfMatche;
 
             IsConnected = false;
             scores.forEach(score => {
                 if(score.judgeId == judgeId)
                 {
-                    document.getElementById('redScore').textContent = getScore(score.red);
-                    document.getElementById('blueScore').textContent = getScore(score.blue);
+                    const red = (numberofmatch == 2 ? score.red2 : score.red) ?? 0;
+                    const blue = (numberofmatch == 2 ? score.blue2 : score.blue) ?? 0;
+
+                    document.getElementById('redScore').textContent = getScore(red);
+                    document.getElementById('blueScore').textContent = getScore(blue);
                     IsConnected = true;
                 }
             });

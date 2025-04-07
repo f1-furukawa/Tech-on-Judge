@@ -82,11 +82,17 @@ wss.on('connection', ws => {
                     }
 
                     court.judges[data.judgeId] = { red: 0, blue: 0, red2: 0, blue2:0 };
+
+                    const sortedJudgesObject = Object.fromEntries(
+                        Object.entries(court.judges)
+                          .sort((a, b) => a[0].localeCompare(b[0]))
+                    );
+
+                    court.judges = sortedJudgesObject;
                 }
                 if(data.role === 'main'){
                     court.mainjudge = createMainJudge(data.mode);
                 }
-
                 console.log('JOIN COURT',court);
                 break;
             case 'update':
@@ -156,7 +162,7 @@ wss.on('connection', ws => {
                 }
                 break;
             case 'Showdown':
-                courts[ws.courtId].mainjudge.showdown = (data.command === 'show');
+                courts[ws.courtId].mainjudge.showdown = data.command;
                 broadcastMainJudge('Showdown',ws.courtId);
                 return;
             case 'NumberOfMatche':
