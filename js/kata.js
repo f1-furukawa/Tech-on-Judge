@@ -3,10 +3,9 @@ const urlParams = new URLSearchParams(window.location.search);
 const courtId = urlParams.get('courtId');
 
 // タイトルと見出しを動的に設定
-document.title = `コート${courtId} | スコアボード`;
+document.title = `コート ${courtId} | スコアボード`;
 document.querySelector('#courtname').textContent = `${courtId}`;
 
-//const ws = new WebSocket('https://tech-on-judge-ws.onrender.com');
 const ws = new WebSocket(wsurl);
 
 ws.onopen = () => {

@@ -94,7 +94,15 @@ wss.on('connection', ws => {
                     target.blue2 = 0;
                 }
                 break;
-
+            case 'AllJudgeScoreReset':
+                for (const judge in courts[ws.courtId].judges) {
+                    const target = courts[ws.courtId].judges[judge];
+                    target.red = 0;
+                    target.blue = 0;
+                    target.red2 = 0;
+                    target.blue2 = 0;
+                }
+                break;
             case 'judgeremove':
                 delete courts[ws.courtId].judges[data.judgeId];
                 break;
