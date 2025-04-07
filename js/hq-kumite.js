@@ -8,7 +8,7 @@ const judgeId = `main`;
 document.getElementById('courtId').textContent = courtId;
 
 ws.onopen = () => {
-    ws.send(JSON.stringify({ type: 'joincourt', courtId, judgeId, role:'main' }));
+    ws.send(JSON.stringify({ type: 'joincourt', courtId, judgeId, role:'main',mode:'kumite' }));
 };
 
 function timer(command)
@@ -45,6 +45,9 @@ ws.onmessage = (event) => {
             judgeScores.innerHTML += row;
                 
         });
+
+        const ctrl = data.Controls;
+        judgeCountMarks(ctrl.maxJudgeCount);
     }
 
 

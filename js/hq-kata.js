@@ -8,7 +8,7 @@ const judgeId = `main`;
 document.getElementById('courtId').textContent = courtId;
 
 ws.onopen = () => {
-    ws.send(JSON.stringify({ type: 'joincourt', courtId, judgeId, role:'main' }));
+    ws.send(JSON.stringify({ type: 'joincourt', courtId, judgeId, role:'main',mode:'kata' }));
 };
 
 function showdown(command)
@@ -50,8 +50,10 @@ ws.onmessage = (event) => {
                 </td>
             </tr>`;
             judgeScores.innerHTML += row;
-            
         });
+
+        const ctrl = data.Controls;
+        judgeCountMarks(ctrl.maxJudgeCount);
     }
 };
 

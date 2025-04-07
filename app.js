@@ -42,9 +42,19 @@ function broadcastMainJudge(type,courtId)
     });
 }
 
-function createMainJudge()
+function createMainJudge(mode)
 {
-    return { timer: 'stop', showdown:false, redWarnig: 0,blueWarnig: 0,redFouls: 0, blueFouls: 0, numberOfMatche: 1 };
+    console.log('createMainJudge',mode);
+    return { 
+        timer: 'stop', 
+        showdown:false, 
+        redWarnig: 0,
+        blueWarnig: 0,
+        redFouls: 0, 
+        blueFouls: 0, 
+        numberOfMatche: 1,
+        maxJudgeCount: mode === 'kumite' ? 4 : 5, // kumiteは4人、kataは5人
+    };
 }
 
 wss.on('connection', ws => {
@@ -55,15 +65,26 @@ wss.on('connection', ws => {
             case 'joincourt':
                 ws.courtId = data.courtId;
                 if (!courts[data.courtId]) {
-                    courts[data.courtId] = { mode: data.mode, judges: {} ,mainjudge:createMainJudge()};
+                    courts[data.courtId] = { mode: data.mode, judges: {} ,mainjudge:createMainJudge(data.mode)};
                 }
                 
                 const court = courts[ws.courtId];
                 if (data.role === 'judge') {
+
+                    //ジャッジIDの文字を数字に変換
+                    const judgeNumber = data.judgeId.charCodeAt(0) - 'A'.charCodeAt(0) + 1;
+
+                    //ジャッジのMAX数を超えたら、何もしない
+                    const maxJudgeCount = court.mainjudge.maxJudgeCount ?? 5;
+                    if(maxJudgeCount < judgeNumber)
+                    {
+                        return;
+                    }
+
                     court.judges[data.judgeId] = { red: 0, blue: 0, red2: 0, blue2:0 };
                 }
                 if(data.role === 'main'){
-                    court.mainjudge = createMainJudge();
+                    court.mainjudge = createMainJudge(data.mode);
                 }
 
                 console.log('JOIN COURT',court);
@@ -85,6 +106,18 @@ wss.on('connection', ws => {
                 }
                 console.log('UPDATE',courts);
                 break;
+            case 'judgeCount':
+                const maxJudgeCount = data.maxJudgeCount;
+                courts[ws.courtId].mainjudge.maxJudgeCount = maxJudgeCount;
+
+                //規定数以上のジャッジIDのメンバーを削除する
+                for (const judge in courts[ws.courtId].judges) {
+                    const judgeNumber = judge.charCodeAt(0) - 'A'.charCodeAt(0) + 1;
+                    if(maxJudgeCount < judgeNumber)
+                    {
+                        delete courts[ws.courtId].judges[judge];
+                    }
+                }
             case 'judgereset':
                 const target = courts[ws.courtId].judges[data.judgeId];
                 if(target){

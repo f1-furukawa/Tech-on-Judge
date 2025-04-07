@@ -20,6 +20,7 @@
     .container {
       display: flex;
       flex: 1;
+      height: 80%;
     }
 
     .area {
@@ -150,11 +151,11 @@
       <div class="center-judge" id="judgeId">審判ID: 12345</div>
       
       <div class="score-section">
-        <div class="score" id="redScore">10</div>
+        <div class="score" id="redScore">-</div>
         <div class="score">-</div>
-        <div class="score" id="blueScore">20</div>
+        <div class="score" id="blueScore">-</div>
       </div>
-      
+      <div id="overalert">指定のジャッジの人数以上です。参加できません。</div>
       <div class="button-section">
         <button class="btn btn-red minus" onclick="updateScore(-1, 0)">ー</button>
         <button class="btn btn-blue minus" onclick="updateScore(0, -1)">ー</button>
@@ -171,13 +172,11 @@
   <script>
     const ws = new WebSocket(wsurl);
     const urlParams = new URLSearchParams(window.location.search);
-
-    const courtId = urlParams.get('courtId');
-    console.log(courtId); // "kata-courtA" など
+  const courtId = urlParams.get('courtId');
+    
 
     const judgeId = urlParams.get('jid');
-
-    document.getElementById('judgeId').textContent = judgeId;
+   document.getElementById('judgeId').textContent = judgeId;
 
     const mode = courtId.startsWith('kata') ? 'kata' : 'kumite';
 
@@ -213,13 +212,16 @@
             const scores = data.Scores;
             console.log(scores);
 
+            IsConnected = false;
             scores.forEach(score => {
                 if(score.judgeId == judgeId)
                 {
                     document.getElementById('redScore').textContent = getScore(score.red);
                     document.getElementById('blueScore').textContent = getScore(score.blue);
+                    IsConnected = true;
                 }
             });
+            document.getElementById('overalert').style.display = IsConnected ? 'none' : 'block';
         }
     };
 

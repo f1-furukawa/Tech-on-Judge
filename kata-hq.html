@@ -12,12 +12,18 @@
         td, th { border: 1px solid #ddd; padding: 8px; }
         th { background-color: #f4f4f4; }
         .points { font-size: 20px; margin: 10px; }
+        .active { background-color: #4CAF50; color: white; }
     </style>
     </style>
 </head>
 <body>
     <h1>主審画面</h1>
     <p>ルームID: <span id="courtId"></span></p>
+    <div>
+        <h2>審判人数</h2>
+        <button onclick="judgeCount(3)" class="jcbtn jc3">3人</button>
+        <button onclick="judgeCount(5)" class="jcbtn jc5">5人</button>
+    </div>
     <div>
         <h2>結果表示</h2>
         <button onclick="showdown('show')">表示</button>
