@@ -11,12 +11,7 @@ ws.onopen = () => {
     ws.send(JSON.stringify({ type: 'joincourt', courtId, judgeId, role:'main',mode:'kata' }));
 };
 
-function showdown(command)
-{
-    const data = JSON.stringify({type: 'Showdown',command})
-    console.log('showdown',data);
-    ws.send(data);
-}
+
 
 function numberofmatch(number)
 {

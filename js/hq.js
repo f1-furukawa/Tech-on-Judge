@@ -1,3 +1,10 @@
+function showdown(command)
+{
+    const data = JSON.stringify({type: 'Showdown',command})
+    console.log('showdown',data);
+    ws.send(data);
+}
+
 function allJudgeScoreReset()
 {
     const data= JSON.stringify({type: 'AllJudgeScoreReset',courtId});

@@ -11,11 +11,7 @@ ws.onopen = () => {
     ws.send(JSON.stringify({ type: 'joincourt', courtId, judgeId, role:'main',mode:'kumite' }));
 };
 
-function timer(command)
-{
-    const data = JSON.stringify({type: 'timer',command})
-    ws.send(data);
-}
+
 
 ws.onmessage = (event) => {
     const data = JSON.parse(event.data);
@@ -53,10 +49,28 @@ ws.onmessage = (event) => {
 
 };
 
+function timer(command,settingtime = 180) 
+{
+    const data = JSON.stringify({type: 'timer',command,'timerRange':settingtime});
+    ws.send(data);
+}
+
 function updateWarningFoul(isFouls,red,blue){
     const data = JSON.stringify({type:'Fouls',isFouls,red,blue});
     ws.send(data);
 }
 
+function endMatch(){
+    const data = JSON.stringify({type:'endMatch'});
+    ws.send(data);
+}
 
+function extendMatch(){
+    const data = JSON.stringify({type:'extendMatch'});
+    ws.send(data);
+}
 
+function blinkStop(){
+    const data = JSON.stringify({type:'blinkStop'});
+    ws.send(data);
+}

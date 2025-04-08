@@ -58,7 +58,6 @@ ws.onmessage = (event) => {
 
     if(data.type === 'Showdown')
     {
-        console.log('showdown',data.Controls.showdown);
         document.getElementById('judge-scores-container').classList.add('hidden');
         document.getElementById('score').style.visibility = 'hidden';
 
