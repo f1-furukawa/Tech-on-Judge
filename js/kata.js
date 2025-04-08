@@ -58,16 +58,18 @@ ws.onmessage = (event) => {
 
     if(data.type === 'Showdown')
     {
-
-        document.getElementById('judge-scores-container').style.visibility = 'hidden';
+        console.log('showdown',data.Controls.showdown);
+        document.getElementById('judge-scores-container').classList.add('hidden');
         document.getElementById('score').style.visibility = 'hidden';
 
-        if(data.Controls.showdown === 'result'){
+        if(data.Controls.showdown === 'result')
+        {
             document.getElementById('score').style.visibility = 'visible';
         }
 
-        if(data.Controls.showdown === 'show'){
-            document.getElementById('judge-scores-container').style.visibility = 'visible';
+        if(data.Controls.showdown === 'show')
+        {
+            document.getElementById('judge-scores-container').classList.remove('hidden');
             document.getElementById('score').style.visibility = 'visible';
         }
     }
@@ -120,8 +122,15 @@ function removeJudgeBar(scores)
 
 function numberofmatchShows(number)
 {
+    console.log('numberofmatch',number);
+    visibility = 'hidden';
+    if(number !== 1){
+        visibility = 'visible';
+    }
+
+    console.log('visibility',document.getElementById('judge-scores-container').style.visibility);
     document.querySelectorAll('.s2').forEach((score) => {
-        score.style.visibility = (number === 1 ? 'hidden' : 'visible');
+        score.style.visibility = visibility;
     });
 }
 
