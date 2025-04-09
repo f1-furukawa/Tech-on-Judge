@@ -1,43 +1,32 @@
 const ws = new WebSocket(wsurl);
 const urlParams = new URLSearchParams(window.location.search);
-const roomId = urlParams.get('roomId');
-console.log(roomId); // "kata-roomA" など
-
+const courtId = urlParams.get('courtId');
 const judgeId = `main`;
 
-document.getElementById('roomId').textContent = roomId;
+document.getElementById('courtId').textContent = courtId;
 
 ws.onopen = () => {
-    ws.send(JSON.stringify({ type: 'joinRoom', roomId, judgeId, role:'main' }));
+    ws.send(JSON.stringify({ type: 'joincourt', courtId, judgeId, role:'main',mode:'kata' }));
 };
 
-function showdown(command)
-{
-    const data = JSON.stringify({type: 'Showdown',command})
-    console.log('showdown',data);
-    ws.send(data);
-}
+
 
 function numberofmatch(number)
 {
     const data = JSON.stringify({type: 'NumberOfMatche',number})
-    console.log('NumberOfMatche',data);
     ws.send(data);
 }
 
 ws.onmessage = (event) => {
     const data = JSON.parse(event.data);
-    console.log('onmessage',data);
 
     if (data.type === 'scores') {
         const scores = data.Scores;
         const judgeScores = document.getElementById('judgeScores');
         judgeScores.innerHTML = ''; // テーブルをクリア
 
-        Object.values(scores).forEach(score => {
+        scores.forEach(score => {
             const judgeScores = document.getElementById('judgeScores');
-            judgeScores.innerHTML = ''; // テーブルをクリア
-
             const { judgeId, red, blue, diff } = score;
 
             // ジャッジごとのスコアをテーブルに追加
@@ -52,26 +41,40 @@ ws.onmessage = (event) => {
                 </td>
             </tr>`;
             judgeScores.innerHTML += row;
-            
         });
+
+        const ctrl = data.Controls;
+        judgeCountMarks(ctrl.maxJudgeCount);
+        numberofmatchMarks(ctrl.numberOfMatche);
+
     }
 };
-
-document.addEventListener("click", (event) => {
-    if (event.target.matches(".scorereset, .remove")) {
-        const td = event.target.closest("td");
-        const input = td.querySelector(".targetjudgeid");
-        const judgeId = input ? input.value : null;
-        const eventName = event.target.classList.contains("scorereset") ? "judgereset" : "judgeremove";
-
-        console.log(`${eventName} judgeId: ${judgeId}`);
-        const data = JSON.stringify({ type: eventName, judgeId });
-        console.log(data);
-        ws.send(data);
-    }
-});
 
 function getKataScore(point)
 {
     return ((100 - (point * 2)) / 10).toFixed(1);
 }
+
+function numberofmatchMarks(number)
+{
+    document.querySelectorAll('.nmbtn').forEach((btn) => { 
+        btn.classList.remove('active');
+    });
+
+    document.querySelectorAll(`.nm${number}`).forEach((btn) => {
+        btn.classList.add('active');
+    });
+}
+
+document.querySelectorAll('.katabtn').forEach(button => {
+    // 各ボタンにクリックイベントを追加
+    button.addEventListener('click', function () {
+        // 表示文字（テキスト）を取得
+        let text = this.textContent;
+
+        if(text === 'クリア') text = '';
+        console.log('kataname',text);
+        const data = JSON.stringify({type: 'kataName',kataName: text})
+        ws.send(data);
+    });
+  });

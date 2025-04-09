@@ -1,33 +1,25 @@
 const ws = new WebSocket(wsurl);
 const urlParams = new URLSearchParams(window.location.search);
-const roomId = urlParams.get('roomId');
-console.log(roomId); // "kata-roomA" など
-
+const courtId = urlParams.get('courtId');
 const judgeId = `main`;
 
-document.getElementById('roomId').textContent = roomId;
+document.getElementById('courtId').textContent = courtId;
 
 ws.onopen = () => {
-    ws.send(JSON.stringify({ type: 'joinRoom', roomId, judgeId, role:'main' }));
+    ws.send(JSON.stringify({ type: 'joincourt', courtId, judgeId, role:'main',mode:'kumite' }));
 };
 
-function timer(command)
-{
-    const data = JSON.stringify({type: 'timer',command})
-    ws.send(data);
-}
+
 
 ws.onmessage = (event) => {
     const data = JSON.parse(event.data);
-    console.log(data);
 
     if (data.type === 'scores') {
         const scores = data.Scores;
-        console.log(scores);
         const judgeScores = document.getElementById('judgeScores');
         judgeScores.innerHTML = ''; // テーブルをクリア
 
-        Object.values(scores).forEach(score => {
+        scores.forEach(score => {
             
             const { judgeId, red, blue, diff } = score;
 
@@ -45,27 +37,36 @@ ws.onmessage = (event) => {
             judgeScores.innerHTML += row;
                 
         });
+
+        const ctrl = data.Controls;
+        judgeCountMarks(ctrl.maxJudgeCount);
     }
 
 
 };
+
+function timer(command,settingtime = 180) 
+{
+    const data = JSON.stringify({type: 'timer',command,'timerRange':settingtime});
+    ws.send(data);
+}
 
 function updateWarningFoul(isFouls,red,blue){
     const data = JSON.stringify({type:'Fouls',isFouls,red,blue});
     ws.send(data);
 }
 
-document.addEventListener("click", (event) => {
-    if (event.target.matches(".scorereset, .remove")) {
-        const td = event.target.closest("td");
-        const input = td.querySelector(".targetjudgeid");
-        const judgeId = input ? input.value : null;
-        const eventName = event.target.classList.contains("scorereset") ? "judgereset" : "judgeremove";
+function endMatch(){
+    const data = JSON.stringify({type:'endMatch'});
+    ws.send(data);
+}
 
-        console.log(`${eventName} judgeId: ${judgeId}`);
-        const data = JSON.stringify({ type: eventName, judgeId });
-        console.log(data);
-        ws.send(data);
-    }
-});
+function extendMatch(){
+    const data = JSON.stringify({type:'extendMatch'});
+    ws.send(data);
+}
 
+function blinkStop(){
+    const data = JSON.stringify({type:'blinkStop'});
+    ws.send(data);
+}

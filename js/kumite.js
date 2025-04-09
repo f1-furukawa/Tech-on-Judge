@@ -1,94 +1,127 @@
 // URLパラメータから部屋IDを取得
 const urlParams = new URLSearchParams(window.location.search);
-const roomId = urlParams.get('roomId');
+const courtId = urlParams.get('courtId');
 
 // タイトルと見出しを動的に設定
-document.title = `部屋 ${roomId} | スコアボード`;
-document.querySelector('#roomname').textContent = `${roomId}`;
+document.title = `コート ${courtId} | スコアボード`;
+document.querySelector('#courtname').textContent = `${courtId}`;
 
-//const ws = new WebSocket('https://tech-on-judge-ws.onrender.com');
 const ws = new WebSocket(wsurl);
 
 ws.onopen = () => {
-    ws.send(JSON.stringify({ type: 'joinRoom', roomId, mode: roomId.startsWith('kata') ? 'kata' : 'kumite' }));
+    ws.send(JSON.stringify({ type: 'joincourt', courtId, mode: courtId.startsWith('kata') ? 'kata' : 'kumite' }));
 };
 
 ws.onmessage = (event) => {
     const data = JSON.parse(event.data);
-    console.log(data);
+    
+    switch (data.type) {
+        case 'scores': {
+            const judgesBarContainer = document.getElementById('judges-bar-container');
+            let totalRedPoints = 0;
+            let totalBluePoints = 0;
 
-    if (data.type === 'scores') {
-        const judgesBarContainer = document.getElementById('judges-bar-container');
-      
-        let totalRedPoints = 0;
-        let totalBluePoints = 0;
+            const scores = data.Scores;
+            const controls = data.Controls;
 
-        const scores = data.Scores;
+            // 注意、反則の減算を行う。
+            const redPenalty = Math.floor(controls.redWarnig / 3) + controls.redFouls;
+            const bluePenalty = Math.floor(controls.blueWarnig / 3) + controls.blueFouls;
 
-        removeJudgeBar(scores);
+            removeJudgeBar(scores);
+            scores.forEach(score => {
+                let { judgeId, red, blue, diff } = score;
 
-        Object.values(scores).forEach(score => {
-            const { judgeId, red, blue, diff } = score;
-            makeJadgeBar(judgesBarContainer,judgeId);
-            
-            const judgeBar = document.getElementById(judgeId); // 親要素を取得
-            judgeBar.querySelectorAll('.RScore')[0].textContent = red;
-            judgeBar.querySelectorAll(`.BScore`)[0].textContent = blue;
+                // 注意・反則分の減点を行う
+                red = red - redPenalty;
+                blue = blue - bluePenalty;
+                diff = red - blue;
 
-            //一旦バーを黒に戻す
-            judgeBar.querySelectorAll('.b4').forEach(bar => {
-                bar.classList.remove('blue');
-                bar.classList.add('black');
+                // ジャッジバーを作成・データの更新
+                makeJadgeBar(judgesBarContainer, judgeId, red, blue);
+
+                // 差に基づいてポイントを加算
+                const absDiff = Math.abs(diff) > 5 ? 5 : Math.abs(diff);
+                if (diff > 0) {
+                    totalRedPoints++;
+                    setScoreBar(judgeId, '.r' + absDiff, 'red');
+                } else if (diff < 0) {
+                    totalBluePoints++;
+                    setScoreBar(judgeId, '.b' + absDiff, 'blue');
+                }
             });
-            judgeBar.querySelectorAll('.r4').forEach(bar => {
-                bar.classList.remove('red');
-                bar.classList.add('black');
-            });
 
-            // 差に基づいてポイントを加算
-            const absDiff = Math.abs(diff) > 4 ? 4 : Math.abs(diff);
-            if (diff > 0)
-            {   
-                totalRedPoints++;
-                setScoreBar(judgeId,'.r' + absDiff,'red');
-            }
-            else if (diff < 0)
-            {
-                totalBluePoints++;
-                setScoreBar(judgeId,'.b' + absDiff,'blue');
-            } 
-        });
+            document.getElementById('redWarning').textContent = controls.redWarnig ?? 0;
+            document.getElementById('blueWarning').textContent = controls.blueWarnig ?? 0;
+            document.getElementById('redFouls').textContent = controls.redFouls ?? 0;
+            document.getElementById('blueFouls').textContent = controls.blueFouls ?? 0;
 
-        let mainjudge = data.Controls;
-        
-        console.log(mainjudge);
-        document.getElementById('redWarning').textContent = mainjudge.redWarnig ?? 0;
-        document.getElementById('blueWarning').textContent = mainjudge.blueWarnig ?? 0;
-        document.getElementById('redFouls').textContent = mainjudge.redFouls ?? 0;
-        document.getElementById('blueFouls').textContent = mainjudge.blueFouls ?? 0;
-
-        // 合計ポイントを更新
-        document.getElementById('totalRedPoints').textContent = totalRedPoints;
-        document.getElementById('totalBluePoints').textContent = totalBluePoints;
-    }
-
-    if(data.type === 'Timer')
-    {
-        console.log(data.Controls.timer);
-        switch (data.Controls.timer) {
-            case 'start':
-                resumeCountdown();
-                break;
-            case 'stop':
-                pauseCountdown();
-                break;
-            case 'reset':
-                timerReset();
-                break;
+            // 合計ポイントを更新
+            document.getElementById('totalRedPoints').textContent = totalRedPoints;
+            document.getElementById('totalBluePoints').textContent = totalBluePoints;
+            break;
         }
+
+        case 'Timer': {
+            switch (data.Controls.timer) {
+                case 'start':
+                    resumeCountdown();
+                    break;
+                case 'stop':
+                    pauseCountdown();
+                    break;
+                case 'reset':
+                    timerReset(data.Controls.timerRange);
+                    break;
+            }
+            break;
+        }
+
+        case 'extendMatch': {
+            // 時間を60秒にセットし直す。
+            timerReset(60);
+            break;
+        }
+
+        case 'Showdown': {
+            if (data.Controls.showdown === 'show') {
+                document.getElementById('judges-bar-container').classList.remove('hidden');
+            }
+
+            if (data.Controls.showdown === 'hidde') {
+                document.getElementById('judges-bar-container').classList.add('hidden');
+            }
+            break;
+        }
+
+        case 'blinkStop': {
+            blinkStop();
+            break;
+        }
+
+        case 'endMatch': {
+            blinkStop();
+
+            // 勝敗を確認して、勝者のスコアを点滅させる
+            // 合計ポイントを取得
+            const redPoint = parseInt(document.getElementById('totalRedPoints').textContent, 10);
+            const bluePoint = parseInt(document.getElementById('totalBluePoints').textContent, 10);
+
+            if (redPoint >= bluePoint) {
+                document.getElementById('totalRedPoints').classList.add('blink');
+            }
+
+            if (bluePoint >= redPoint) {
+                document.getElementById('totalBluePoints').classList.add('blink');
+            }
+            break;
+        }
+
+        default:
+            console.log(`Unknown data type: ${data.type}`);
+            break;
     }
 };
-
 
 document.getElementById('resetButton').addEventListener('click', () => {
     ws.send(JSON.stringify({ type: 'reset' }));
@@ -104,7 +137,7 @@ function isDebugEmpty(obj) {
     );
 }
 
-function makeJadgeBar(container,jid)
+function makeJadgeBar(container,jid,red,blue)
 {
     const jBar = document.getElementById(jid);
     if(!jBar)
@@ -112,17 +145,19 @@ function makeJadgeBar(container,jid)
         const bars = `
         <div class="judge-bar" id="${jid}">
             <div class="bar-group">
-                <div class="bar red r4"></div>
-                <div class="bar red r3 r4"></div>
-                <div class="bar red r2 r3 r4"></div>
-                <div class="bar red r1 r2 r3 r4"></div>
+                <div class="bar red r5"></div>
+                <div class="bar red r4 r5"></div>
+                <div class="bar red r3 r4 r5"></div>
+                <div class="bar red r2 r3 r4 r5"></div>
+                <div class="bar red r1 r2 r3 r4 r5"></div>
             </div>
             <div class="bar-divider"></div>
             <div class="bar-group">
-                <div class="bar blue b1 b2 b3 b4"></div>
-                <div class="bar blue b2 b3 b4"></div>
-                <div class="bar blue b3 b4"></div>
-                <div class="bar blue b4"></div>
+                <div class="bar blue b1 b2 b3 b4 b5"></div>
+                <div class="bar blue b2 b3 b4 b5"></div>
+                <div class="bar blue b3 b4 b5"></div>
+                <div class="bar blue b4 b5"></div>
+                <div class="bar blue b5"></div>
             </div>
             <div class="score-box"><span class="RScore">2</span>-<span class="BScore">2</span></div>
             <div class="judge-id">${jid}</div>
@@ -130,6 +165,30 @@ function makeJadgeBar(container,jid)
         `;
         container.innerHTML += bars;
     }
+
+    // 親要素を取得
+    const judgeBar = document.getElementById(jid); 
+
+    //一旦バーを黒に戻す
+    judgeBar.querySelectorAll('.b5').forEach(bar => {
+        bar.classList.remove('blue');
+        bar.classList.add('black');
+    });
+    judgeBar.querySelectorAll('.r5').forEach(bar => {
+        bar.classList.remove('red');
+        bar.classList.add('black');
+    });
+
+    // スコアを更新
+    const viewRed = Math.abs(red);
+    const viewBlue = Math.abs(blue);
+    
+    judgeBar.querySelectorAll('.RScore')[0].textContent = viewRed;
+    judgeBar.querySelectorAll(`.BScore`)[0].textContent = viewBlue;
+
+    judgeBar.querySelectorAll('.RScore')[0].style.color = red < 0 ? 'red' : 'black';
+    judgeBar.querySelectorAll('.BScore')[0].style.color = blue < 0 ? 'red' : 'black';
+
 }
 
 function removeJudgeBar(scores)
@@ -149,14 +208,18 @@ function removeJudgeBar(scores)
 
 function setScoreBar(judgeId,onclass,colorclass)
 {
-    console.log(judgeId,onclass,colorclass);
     const judgeBar = document.getElementById(judgeId);
     const bars = judgeBar.querySelectorAll(onclass);
-    console.log(bars.length);
     if (bars.length > 0) {
         bars.forEach(bar => {
             bar.classList.remove('black');
             bar.classList.add(colorclass);
         });
     }
+}
+
+function blinkStop()
+{
+    document.getElementById('totalRedPoints').classList.remove('blink');
+    document.getElementById('totalBluePoints').classList.remove('blink');
 }

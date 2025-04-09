@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ジャッジ</title>
+    <style>
+        html, body {touch-action: manipulation;}
+        body { font-family: Arial, sans-serif; text-align: center; margin: 20px; }
+        button { margin: 5px; padding: 10px 20px; font-size: 16px; }
+        .score { font-size: 20px; margin: 10px; }
+        table { margin: 20px auto; border-collapse: collapse; }
+        td, th { border: 1px solid #ddd; padding: 8px; }
+        th { background-color: #f4f4f4; }
+        .points { font-size: 20px; margin: 10px; }
+        .active { background-color: #4CAF50; color: white; }
+    </style>
+    </style>
+</head>
+<body>
+    <h1>主審画面</h1>
+    <p>ルームID: <span id="courtId"></span></p>
+    <div>
+        <h2>審判人数</h2>
+        <button onclick="judgeCount(3)" class="jcbtn jc3">3人</button>
+        <button onclick="judgeCount(5)" class="jcbtn jc5">5人</button>
+    </div>
+    <div>
+        <h2>結果表示</h2>
+        <button onclick="showdown('show')">全て表示</button>
+        <button onclick="showdown('result')">結果のみ表示</button>
+        <button onclick="showdown('hidde')">隠す</button>
+    </div>
+
+    <div>
+        <h2>採点</h2>
+        <button onclick="numberofmatch(1)" class="nmbtn nm1">１回目</button>
+        <button onclick="numberofmatch(2)" class="nmbtn nm2">２回目</button>
+    </div>
+
+    <div>
+        <h2>型名</h2>
+            <button class="katabtn clear">クリア</button><br />
+            <button class="katabtn">チョンジ（天地）</button>
+            <button class="katabtn">タングン（檀君）</button>
+            <button class="katabtn">トサン（島山）</button>
+            <button class="katabtn">ウォニョ（元曉）</button>
+            <button class="katabtn">ユルゴク（栗谷）	</button>
+            <button class="katabtn">チュングン（重根）</button>
+            <button class="katabtn">テエゲ（退渓）</button>
+            <button class="katabtn">ファラン（花朗）</button>
+            <button class="katabtn">チュンム（忠武）</button>
+            <button class="katabtn">クワンゲ（廣開）</button>
+            <button class="katabtn">ポウン（圃隠）</button>
+            <button class="katabtn">ケベク（階伯）</button>
+            <button class="katabtn">ウィアム（義菴）</button>
+            <button class="katabtn">チュンジャン（忠壮）</button>
+            <button class="katabtn">チュチェ（主体）</button>
+            <button class="katabtn">サミル（三一）</button>
+            <button class="katabtn">ユシン（庚信）</button>
+            <button class="katabtn">チェヨン（崔瑩）</button>
+            <button class="katabtn">ヨンゲ（淵蓋）</button>
+            <button class="katabtn">ウルチ（乙支）</button>
+            <button class="katabtn">ムンム（文武）</button>
+            <button class="katabtn">ソサン（西山）</button>
+            <button class="katabtn">セジョン（世宗）</button>
+            <button class="katabtn">トンイル（統一）</button>            
+    </div>
+
+    <h2>ジャッジ別スコア</h2>
+    <button onclick="allJudgeScoreReset()">全員のスコアリセット</button>
+    <table>
+        <thead>
+            <tr>
+                <th>ジャッジID</th>
+                <th>赤</th>
+                <th>青</th>
+                <th>操作</th>
+            </tr>
+        </thead>
+        <tbody id="judgeScores"></tbody>
+    </table>
+
+    <script src="js/wsurl.js"></script>
+    <script src="js/hq.js"></script>
+    <script src="js/hq-kata.js"></script>
+ </body>
+</html>

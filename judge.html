@@ -20,6 +20,7 @@
     .container {
       display: flex;
       flex: 1;
+      height: 80%;
     }
 
     .area {
@@ -146,15 +147,15 @@
 
     <!-- 真ん中エリア -->
     <div class="center">
-      <div class="center-header" id="roomId">部屋の名前</div>
+      <div class="center-header" id="courtId">部屋の名前</div>
       <div class="center-judge" id="judgeId">審判ID: 12345</div>
       
       <div class="score-section">
-        <div class="score" id="redScore">10</div>
+        <div class="score" id="redScore">-</div>
         <div class="score">-</div>
-        <div class="score" id="blueScore">20</div>
+        <div class="score" id="blueScore">-</div>
       </div>
-      
+      <div id="overalert">指定のジャッジの人数以上です。参加できません。</div>
       <div class="button-section">
         <button class="btn btn-red minus" onclick="updateScore(-1, 0)">ー</button>
         <button class="btn btn-blue minus" onclick="updateScore(0, -1)">ー</button>
@@ -171,17 +172,16 @@
   <script>
     const ws = new WebSocket(wsurl);
     const urlParams = new URLSearchParams(window.location.search);
-    const roomId = urlParams.get('roomId');
-    console.log(roomId); // "kata-roomA" など
+  const courtId = urlParams.get('courtId');
+    
 
-    const judgeId = `judge-${Math.floor(Math.random() * 1000)}`;
+    const judgeId = urlParams.get('jid');
+   document.getElementById('judgeId').textContent = judgeId;
 
-    document.getElementById('judgeId').textContent = judgeId;
+    const mode = courtId.startsWith('kata') ? 'kata' : 'kumite';
 
-    const mode = roomId.startsWith('kata') ? 'kata' : 'kumite';
-
-    document.title = `${roomId}-${judgeId}`;
-    document.getElementById('roomId').textContent = roomId;
+    document.title = `${courtId}-${judgeId}`;
+    document.getElementById('courtId').textContent = courtId;
     
     if(mode == 'kata')
     {
@@ -190,19 +190,17 @@
     }
 
     ws.onopen = () => {
-        ws.send(JSON.stringify({ type: 'joinRoom', roomId, judgeId, role:'judge', mode}));
+        ws.send(JSON.stringify({ type: 'joincourt', courtId, judgeId, role:'judge', mode}));
     };
 
     function updateScore(red, blue) {
         const data = JSON.stringify({ type: 'update', judgeId, red, blue });
-        console.log(data);
         ws.send(data);
     }
 
     ws.onmessage = (event) => {
         const data = JSON.parse(event.data);
-        console.log('scores',data);
-
+        
         if (data.type === 'scores') {
             const judgesBarContainer = document.getElementById('judges-bar-container');
         
@@ -210,22 +208,21 @@
             let totalBluePoints = 0;
 
             const scores = data.Scores;
-            console.log(scores);
+            const numberofmatch = data.Controls.numberOfMatche;
 
-            // scores.forEach(score => {
-            //     if(score.judgeId == judgeId)
-            //     {
-            //         document.getElementById('redScore').textContent = getScore(score.red);
-            //         document.getElementById('blueScore').textContent = getScore(score.blue);
-            //     }
-            // });
+            IsConnected = false;
+            scores.forEach(score => {
+                if(score.judgeId == judgeId)
+                {
+                    const red = (numberofmatch == 2 ? score.red2 : score.red) ?? 0;
+                    const blue = (numberofmatch == 2 ? score.blue2 : score.blue) ?? 0;
 
-            score = scores[judgeId];
-            if(score)
-            {
-                document.getElementById('redScore').textContent = getScore(score.red);
-                document.getElementById('blueScore').textContent = getScore(score.blue);
-            }
+                    document.getElementById('redScore').textContent = getScore(red);
+                    document.getElementById('blueScore').textContent = getScore(blue);
+                    IsConnected = true;
+                }
+            });
+            document.getElementById('overalert').style.display = IsConnected ? 'none' : 'block';
         }
     };
 

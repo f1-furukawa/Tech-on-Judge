@@ -45,6 +45,12 @@
             display: flex;
             justify-content: flex-end;
         }
+        .courtName {
+            font-size: 5vh;
+            text-align: center;
+            margin: 0 10px;
+            padding: 10px;
+        }
         .score {
             border-top: 1vh solid white;
             display: flex;
@@ -87,6 +93,11 @@
             display: flex;
             justify-content: space-around;
             flex-wrap: wrap;
+        }
+
+        #judge-scores-container.hidden {
+            opacity: 0;
+            pointer-events: none;
         }
         .judge {
             display: flex;
@@ -137,7 +148,7 @@
         <div class="logo-container">
             <div class="logo-left">
                 <img src="img/logo_tec.png" class="logo" alt="ITF Logo">
-                <div id="roomname"></div>
+                <div id="courtname" class="courtName"></div>
             </div>
             
             <div class="logo-right">
@@ -153,9 +164,7 @@
             <div class="red"  id="totalRedPoints">0</div>
         </div>
         
-        <div class="kataname">
-            
-        </div>
+        <div class="kataname" id="kataName"></div>
         
         <!-- ジャッジスコア部分 -->
         <div id="judge-scores-container" class="judge-scores-container">

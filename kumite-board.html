@@ -121,6 +121,7 @@
         .judges-bar-container {
             display: flex;
             gap: 20px;
+            
         }
         .judge-bar {
             display: flex;
@@ -138,15 +139,15 @@
             align-items: center;
         }
         .bar {
-            width: 70px;
-            height: 20px;
+            width: 120px;
+            height: 15px;
             margin: 2px;
         }
         .bar.red { background-color: red; }
         .bar.blue { background-color: blue; }
         .bar.black { background-color: black; }
         .bar-divider {
-            width: 80px;
+            width: 120px;
             height: 5px;
             background-color: white;
             margin: 5px 0;
@@ -158,7 +159,7 @@
             padding: 5px;
             font-size: 30px;
             font-weight: bold;
-            width: 80px;
+            width: 130px;
             text-align: center;
         }
         .judge-id{
@@ -171,6 +172,21 @@
             align-items: center;
             height: 5vh;
         }
+
+        #judges-bar-container.hidden {
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        .blink {
+            animation: blink-animation 1s step-start infinite;
+        }
+
+        @keyframes blink-animation {
+            50% {
+                opacity: 0;
+            }
+        }
     </style>
 </head>
 <body>
@@ -178,7 +194,7 @@
         <div class="main">
         <div class="left-panel">
             <img src="img/logo_tec.png" class="logo" alt="ITF Logo">
-            <div id="roomname"></div>
+            <div id="courtname"></div>
             <div class="timer" id="timer">03:00</div>
             <div class="logo-container">
                 <img src="img/logo_itf.png" class="logo" alt="ITF Logo">
