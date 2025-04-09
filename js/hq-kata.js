@@ -1,8 +1,6 @@
 const ws = new WebSocket(wsurl);
 const urlParams = new URLSearchParams(window.location.search);
 const courtId = urlParams.get('courtId');
-console.log(courtId); // "kata-courtA" など
-
 const judgeId = `main`;
 
 document.getElementById('courtId').textContent = courtId;
@@ -16,13 +14,11 @@ ws.onopen = () => {
 function numberofmatch(number)
 {
     const data = JSON.stringify({type: 'NumberOfMatche',number})
-    console.log('NumberOfMatche',data);
     ws.send(data);
 }
 
 ws.onmessage = (event) => {
     const data = JSON.parse(event.data);
-    console.log('onmessage',data);
 
     if (data.type === 'scores') {
         const scores = data.Scores;
@@ -61,8 +57,6 @@ function getKataScore(point)
 
 function numberofmatchMarks(number)
 {
-    console.log('numberofmatch',number);
-
     document.querySelectorAll('.nmbtn').forEach((btn) => { 
         btn.classList.remove('active');
     });
@@ -71,3 +65,16 @@ function numberofmatchMarks(number)
         btn.classList.add('active');
     });
 }
+
+document.querySelectorAll('.katabtn').forEach(button => {
+    // 各ボタンにクリックイベントを追加
+    button.addEventListener('click', function () {
+        // 表示文字（テキスト）を取得
+        let text = this.textContent;
+
+        if(text === 'クリア') text = '';
+        console.log('kataname',text);
+        const data = JSON.stringify({type: 'kataName',kataName: text})
+        ws.send(data);
+    });
+  });

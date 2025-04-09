@@ -14,62 +14,69 @@ ws.onopen = () => {
 
 ws.onmessage = (event) => {
     const data = JSON.parse(event.data);
-    console.log('onmessage',data);
-
-    if (data.type === 'scores') {
-        const judgesBarContainer = document.getElementById('judge-scores-container');
-        
-        let totalScores = { red: 0, blue: 0, even: 0 };
-
-        const scores = data.Scores;
-
-        removeJudgeBar(scores);
-
-        Object.values(scores).forEach(score => {
-            const { judgeId, red, blue, diff,red2,blue2,diff2} = score;
-            makeJadgeBar(judgesBarContainer,judgeId);
+    switch (data.type) {
+        case 'scores':
+            const judgesBarContainer = document.getElementById('judge-scores-container');
             
-            const judgeBar = document.getElementById(judgeId); // 親要素を取得
-            judgeBar.querySelectorAll('.RScore1')[0].textContent = getKataScore(red);
-            judgeBar.querySelectorAll(`.BScore1`)[0].textContent = getKataScore(blue);
-            judgeBar.querySelectorAll('.RScore2')[0].textContent = getKataScore(red2);
-            judgeBar.querySelectorAll(`.BScore2`)[0].textContent = getKataScore(blue2);
+            let totalScores = { red: 0, blue: 0, even: 0 };
 
-            // 差に基づいてポイントを加算
-            if (diff < 0) totalScores.red++;
-            else if (diff > 0) totalScores.blue++;    
-            else if(diff == 0) totalScores.even++;
+            const scores = data.Scores;
 
-            if(data.Controls.numberOfMatche == 2){
-                if (diff2 < 0) totalScores.red++;
-                else if (diff2 > 0) totalScores.blue++;    
-                else if(diff2 == 0) totalScores.even++;
+            removeJudgeBar(scores);
+
+            Object.values(scores).forEach(score => {
+                const { judgeId, red, blue, diff,red2,blue2,diff2} = score;
+                makeJadgeBar(judgesBarContainer,judgeId);
+                
+                const judgeBar = document.getElementById(judgeId); // 親要素を取得
+                judgeBar.querySelectorAll('.RScore1')[0].textContent = getKataScore(red);
+                judgeBar.querySelectorAll(`.BScore1`)[0].textContent = getKataScore(blue);
+                judgeBar.querySelectorAll('.RScore2')[0].textContent = getKataScore(red2);
+                judgeBar.querySelectorAll(`.BScore2`)[0].textContent = getKataScore(blue2);
+
+                // 差に基づいてポイントを加算
+                if (diff < 0) totalScores.red++;
+                else if (diff > 0) totalScores.blue++;    
+                else if(diff == 0) totalScores.even++;
+
+                if(data.Controls.numberOfMatche == 2){
+                    if (diff2 < 0) totalScores.red++;
+                    else if (diff2 > 0) totalScores.blue++;    
+                    else if(diff2 == 0) totalScores.even++;
+                }
+            });
+
+            // 合計ポイントを更新
+            document.getElementById('totalRedPoints').textContent = totalScores.red;
+            document.getElementById('totalBluePoints').textContent = totalScores.blue;
+            document.getElementById('totalEvenPoints').textContent = totalScores.even;
+
+            //スコアの表示
+            numberofmatchShows(data.Controls.numberOfMatche);
+            
+            break;
+
+        case 'Showdown':
+        {
+            document.getElementById('judge-scores-container').classList.add('hidden');
+            document.getElementById('score').style.visibility = 'hidden';
+
+            if(data.Controls.showdown === 'result')
+            {
+                document.getElementById('score').style.visibility = 'visible';
             }
-        });
 
-        // 合計ポイントを更新
-        document.getElementById('totalRedPoints').textContent = totalScores.red;
-        document.getElementById('totalBluePoints').textContent = totalScores.blue;
-        document.getElementById('totalEvenPoints').textContent = totalScores.even;
-
-        //スコアの表示
-        numberofmatchShows(data.Controls.numberOfMatche);
-    }
-
-    if(data.type === 'Showdown')
-    {
-        document.getElementById('judge-scores-container').classList.add('hidden');
-        document.getElementById('score').style.visibility = 'hidden';
-
-        if(data.Controls.showdown === 'result')
-        {
-            document.getElementById('score').style.visibility = 'visible';
+            if(data.Controls.showdown === 'show')
+            {
+                document.getElementById('judge-scores-container').classList.remove('hidden');
+                document.getElementById('score').style.visibility = 'visible';
+            }
+            break;
         }
-
-        if(data.Controls.showdown === 'show')
+        case 'kataName':
         {
-            document.getElementById('judge-scores-container').classList.remove('hidden');
-            document.getElementById('score').style.visibility = 'visible';
+            document.getElementById('kataName').textContent = data.Controls.kataName;
+            break;
         }
     }
 };
@@ -121,13 +128,11 @@ function removeJudgeBar(scores)
 
 function numberofmatchShows(number)
 {
-    console.log('numberofmatch',number);
     visibility = 'hidden';
     if(number !== 1){
         visibility = 'visible';
     }
 
-    console.log('visibility',document.getElementById('judge-scores-container').style.visibility);
     document.querySelectorAll('.s2').forEach((score) => {
         score.style.visibility = visibility;
     });

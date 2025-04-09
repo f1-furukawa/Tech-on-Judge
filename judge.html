@@ -195,14 +195,12 @@
 
     function updateScore(red, blue) {
         const data = JSON.stringify({ type: 'update', judgeId, red, blue });
-        console.log(data);
         ws.send(data);
     }
 
     ws.onmessage = (event) => {
         const data = JSON.parse(event.data);
-        console.log('scores',data);
-
+        
         if (data.type === 'scores') {
             const judgesBarContainer = document.getElementById('judges-bar-container');
         

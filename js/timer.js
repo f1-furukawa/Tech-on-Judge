@@ -15,8 +15,6 @@ function updateTimerDisplay(remainingTime) {
 }
 
 function resumeCountdown() {
-    console.log('isRunning',isRunning);
-    console.log('pauseElapsed',pauseElapsed);
     
     if (isRunning) return; // 二重起動防止
 
@@ -30,13 +28,13 @@ function resumeCountdown() {
         const remaining = Math.max(0, settingtime - elapsed); // 残り時間を計算
 
         updateTimerDisplay(remaining);
-        console.log('timeInterval',remaining);
 
-        if (remaining <= 0) {
+        if (remaining <= 0) 
+        {
             clearInterval(timerInterval);
             pauseElapsed = 0;
         }
-    }, 1000);
+    }, 500);
 }
 
 function pauseCountdown() {

@@ -17,41 +17,18 @@ function getResult(court)
     return results;
 }
 
-function broadcastScores(courtId) {
-
+function broadcast(type,courtId){
     const court = courts[courtId];
-    const results = getResult(court);
-
-    console.log('scores',courtId,results);
-
-    wss.clients.forEach(client => {
-        if (client.readyState === WebSocket.OPEN && client.courtId === courtId) {
-            
-            client.send(JSON.stringify({
-                type: 'scores',
-                Scores: results,
-                Controls: court.Controls,
-            }));
-        }
-    });
-}
-
-function broadcastControls(type,courtId)
-{
-    const court = courts[courtId];
-    console.log('bcCtrl',type,court.Controls);
     let result = [];
     switch(type){
-        case 'Timer':
-        case 'Showdown':
-            break;
+        case 'scores':
         case 'endMatch':
         case 'extendMatch':
             result = getResult(court);
             break;
         default:
     }
-    console.log('bcCtrl',result);
+    console.log('broadcast',type,result,court.Controls);
     wss.clients.forEach(client => {
         if (client.readyState === WebSocket.OPEN && client.courtId === courtId) {
             client.send(JSON.stringify({
@@ -62,6 +39,7 @@ function broadcastControls(type,courtId)
         }
     });
 }
+
 
 function createControls(mode)
 {
@@ -74,6 +52,7 @@ function createControls(mode)
         redFouls: 0, 
         blueFouls: 0, 
         numberOfMatche: 1,
+        kataName: '',
         maxJudgeCount: mode === 'kumite' ? 4 : 5, // kumiteは4人、kataは5人
     };
 }
@@ -81,7 +60,7 @@ function createControls(mode)
 wss.on('connection', ws => {
     ws.on('message', message => {
         const data = JSON.parse(message);
-        console.log(data,ws.courtId);
+        console.log('message',data,ws.courtId);
         switch (data.type) {
             case 'joincourt':
                 ws.courtId = data.courtId;
@@ -104,15 +83,18 @@ wss.on('connection', ws => {
 
                     court.judges[data.judgeId] = { red: 0, blue: 0, red2: 0, blue2:0 };
 
+                    //ジャッジのID順にソートする
                     const sortedJudgesObject = Object.fromEntries(
                         Object.entries(court.judges)
                           .sort((a, b) => a[0].localeCompare(b[0]))
                     );
-
                     court.judges = sortedJudgesObject;
                 }
                 if(data.role === 'main'){
-                    court.Controls = createControls(data.mode);
+                    const mianControl = court.Controls;
+                    if(!mianControl){
+                        court.Controls = createControls(data.mode);
+                    }
                 }
                 console.log('JOIN COURT',court);
                 break;
@@ -169,7 +151,7 @@ wss.on('connection', ws => {
             case 'timer':
                 courts[ws.courtId].Controls.timer = data.command;
                 courts[ws.courtId].Controls.timerRange = data.timerRange;
-                broadcastControls('Timer',ws.courtId);
+                broadcast('Timer',ws.courtId);
                 return;
             case 'Fouls':
                 const main = courts[ws.courtId].Controls;
@@ -185,19 +167,18 @@ wss.on('connection', ws => {
                 break;
             case 'Showdown':
                 courts[ws.courtId].Controls.showdown = data.command;
-                broadcastControls('Showdown',ws.courtId);
+                broadcast('Showdown',ws.courtId);
                 return;
             case 'NumberOfMatche':
                 courts[ws.courtId].Controls.numberOfMatche = data.number;
                 break;
             case 'endMatch':
-                broadcastControls('endMatch',ws.courtId);
+                broadcast('endMatch',ws.courtId);
                 return;
             case 'blinkStop':
-                broadcastControls('blinkStop',ws.courtId);
+                broadcast('blinkStop',ws.courtId);
                 return;
             case 'extendMatch':
-                console.log('extendMatch',ws.courtId);
                 const resetCourt = courts[ws.courtId];
                 //審判のスコアをリセットする。
                 for (const jid in resetCourt.judges) 
@@ -219,14 +200,18 @@ wss.on('connection', ws => {
                 resetControls.timer = 'stop'; // タイマーを停止
                 resetControls.timerRange = 60; // 60秒にセット
 
-                broadcastControls('extendMatch',ws.courtId);
+                broadcast('extendMatch',ws.courtId);
+                break;
+            case 'kataName':
+                courts[ws.courtId].Controls.kataName = data.kataName;
+                broadcast('kataName',ws.courtId);
                 break;
             case 'reset':
                 courts[ws.courtId].judges = {};
                 break;
         }
 
-        broadcastScores(ws.courtId);
+        broadcast('scores',ws.courtId);
     });
 });
 

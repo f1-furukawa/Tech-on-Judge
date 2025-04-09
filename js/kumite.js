@@ -14,8 +14,7 @@ ws.onopen = () => {
 
 ws.onmessage = (event) => {
     const data = JSON.parse(event.data);
-    console.log(data);
-
+    
     switch (data.type) {
         case 'scores': {
             const judgesBarContainer = document.getElementById('judges-bar-container');
@@ -28,8 +27,6 @@ ws.onmessage = (event) => {
             // 注意、反則の減算を行う。
             const redPenalty = Math.floor(controls.redWarnig / 3) + controls.redFouls;
             const bluePenalty = Math.floor(controls.blueWarnig / 3) + controls.blueFouls;
-            console.log('redPenalty', redPenalty);
-            console.log('bluePenalty', bluePenalty);
 
             removeJudgeBar(scores);
             scores.forEach(score => {
@@ -81,7 +78,6 @@ ws.onmessage = (event) => {
         }
 
         case 'extendMatch': {
-            console.log('extendMatch', data.Scores);
             // 時間を60秒にセットし直す。
             timerReset(60);
             break;
@@ -99,14 +95,11 @@ ws.onmessage = (event) => {
         }
 
         case 'blinkStop': {
-            console.log('blinkStop');
             blinkStop();
             break;
         }
 
         case 'endMatch': {
-            console.log('endMatch');
-
             blinkStop();
 
             // 勝敗を確認して、勝者のスコアを点滅させる
@@ -215,10 +208,8 @@ function removeJudgeBar(scores)
 
 function setScoreBar(judgeId,onclass,colorclass)
 {
-    console.log(judgeId,onclass,colorclass);
     const judgeBar = document.getElementById(judgeId);
     const bars = judgeBar.querySelectorAll(onclass);
-    console.log(bars.length);
     if (bars.length > 0) {
         bars.forEach(bar => {
             bar.classList.remove('black');

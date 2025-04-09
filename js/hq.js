@@ -1,7 +1,6 @@
 function showdown(command)
 {
     const data = JSON.stringify({type: 'Showdown',command})
-    console.log('showdown',data);
     ws.send(data);
 }
 
@@ -19,8 +18,6 @@ function judgeCount(maxJudgeCount)
 
 function judgeCountMarks(maxJudgeCount)
 {
-    console.log('judgeCountMarks',maxJudgeCount);
-
     document.querySelectorAll('.jcbtn').forEach((btn) => { 
         btn.classList.remove('active');
     });

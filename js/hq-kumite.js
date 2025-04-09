@@ -1,8 +1,6 @@
 const ws = new WebSocket(wsurl);
 const urlParams = new URLSearchParams(window.location.search);
 const courtId = urlParams.get('courtId');
-console.log(courtId); // "kata-courtA" など
-
 const judgeId = `main`;
 
 document.getElementById('courtId').textContent = courtId;
@@ -15,11 +13,9 @@ ws.onopen = () => {
 
 ws.onmessage = (event) => {
     const data = JSON.parse(event.data);
-    console.log(data);
 
     if (data.type === 'scores') {
         const scores = data.Scores;
-        console.log(scores);
         const judgeScores = document.getElementById('judgeScores');
         judgeScores.innerHTML = ''; // テーブルをクリア
 
