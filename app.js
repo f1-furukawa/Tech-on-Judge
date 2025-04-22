@@ -81,7 +81,10 @@ wss.on('connection', ws => {
                         return;
                     }
 
-                    court.judges[data.judgeId] = { red: 0, blue: 0, red2: 0, blue2:0 };
+                    if(!court.judges[data.judgeId])
+                    {
+                        court.judges[data.judgeId] = { red: 0, blue: 0, red2: 0, blue2:0 };
+                    }
 
                     //ジャッジのID順にソートする
                     const sortedJudgesObject = Object.fromEntries(
