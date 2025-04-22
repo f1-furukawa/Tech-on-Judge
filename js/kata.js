@@ -3,7 +3,7 @@ const urlParams = new URLSearchParams(window.location.search);
 const courtId = urlParams.get('courtId');
 
 // タイトルと見出しを動的に設定
-document.title = `コート ${courtId} | スコアボード`;
+document.title = `${courtId} | スコアボード`;
 document.querySelector('#courtname').textContent = `${courtId}`;
 
 const ws = new WebSocket(wsurl);

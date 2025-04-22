@@ -175,17 +175,19 @@
   <script>
     const ws = new WebSocket(wsurl);
     const urlParams = new URLSearchParams(window.location.search);
-  const courtId = urlParams.get('courtId');
+    const courtId = urlParams.get('courtId');
     
 
     const judgeId = urlParams.get('jid');
-   document.getElementById('judgeId').textContent = judgeId;
+    document.getElementById('judgeId').textContent = judgeId;
 
     const mode = courtId.startsWith('kata') ? 'kata' : 'kumite';
 
     document.title = `${courtId}-${judgeId}`;
     document.getElementById('courtId').textContent = courtId;
-    
+    document.title = `${courtId} | ジャッジ ${judgeId}`;
+
+
     if(mode == 'kata')
     {
         document.querySelectorAll('.plus').forEach(function(e) {e.textContent = 'ー'});
@@ -203,6 +205,7 @@
 
     ws.onmessage = (event) => {
         const data = JSON.parse(event.data);
+        console.log(data);
         
         if (data.type === 'scores') {
             const judgesBarContainer = document.getElementById('judges-bar-container');

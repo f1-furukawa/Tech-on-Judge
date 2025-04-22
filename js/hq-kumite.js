@@ -3,6 +3,7 @@ const urlParams = new URLSearchParams(window.location.search);
 const courtId = urlParams.get('courtId');
 const judgeId = `main`;
 
+document.title = `${courtId} | 本部`;
 document.getElementById('courtId').textContent = courtId;
 
 ws.onopen = () => {

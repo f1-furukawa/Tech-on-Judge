@@ -38,11 +38,12 @@ kataNameList.forEach(kataName => {
 
 })
 
-
+document.title = `${courtId} | 本部`;
 document.getElementById('courtId').textContent = courtId;
 
 ws.onopen = () => {
     ws.send(JSON.stringify({ type: 'joincourt', courtId, judgeId, role:'main',mode:'kata' }));
+
 };
 
 ws.onmessage = (event) => {
@@ -55,13 +56,13 @@ ws.onmessage = (event) => {
 
         scores.forEach(score => {
             const judgeScores = document.getElementById('judgeScores');
-            const { judgeId, red, blue, diff } = score;
+            const { judgeId, red, blue,red2,blue2, diff } = score;
 
             // ジャッジごとのスコアをテーブルに追加
             const row = `<tr>
                 <td>${judgeId}</td>
-                <td>${getKataScore(red)}</td>
-                <td>${getKataScore(blue)}</td>
+                <td>${getKataScore(red)}</br>${getKataScore(red2)}</td>
+                <td>${getKataScore(blue)}</br>${getKataScore(blue2)}</td>
                 <td>
                     <input type="hidden" class="targetjudgeid" value='${judgeId}'>
                     <button class="scorereset" >スコアリセット</button>
