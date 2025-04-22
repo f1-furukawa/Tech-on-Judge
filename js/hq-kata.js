@@ -72,11 +72,14 @@ ws.onmessage = (event) => {
             judgeScores.innerHTML += row;
         });
 
-        const ctrl = data.Controls;
-        judgeCountMarks(ctrl.maxJudgeCount);
-        numberofmatchMarks(ctrl.numberOfMatche);
+       
+        
 
     }
+    const ctrl = data.Controls;
+    judgeCountMarks(ctrl.maxJudgeCount);
+    numberofmatchMarks(ctrl.numberOfMatche);
+    showdownMarks(ctrl.showdown);
 };
 
 function numberofmatch(number)
@@ -100,6 +103,7 @@ function numberofmatchMarks(number)
         btn.classList.add('active');
     });
 }
+
 
 
 

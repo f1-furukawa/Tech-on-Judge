@@ -27,6 +27,18 @@ function judgeCountMarks(maxJudgeCount)
     });
 }
 
+function showdownMarks(showdown)
+{
+    if(!showdown) showdown = 'show';
+    document.querySelectorAll('.showdownbtn').forEach((btn) => { 
+        btn.classList.remove('active');
+    });
+    document.querySelectorAll(`.${showdown}`).forEach((btn) => {
+        btn.classList.add('active');
+    });
+}
+
+
 document.addEventListener("click", (event) => {
     if (event.target.matches(".scorereset, .remove")) {
         const td = event.target.closest("td");

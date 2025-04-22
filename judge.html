@@ -159,6 +159,7 @@
         <div class="score" id="blueScore">-</div>
       </div>
       <div id="overalert">指定のジャッジの人数以上です。参加できません。</div>
+      <div id="noconnection" class="display:none;">スコアボードと接続出来ていません。</div>
       <div class="button-section">
         <button class="btn btn-red minus" onclick="updateScore(-1, 0)">ー</button>
         <button class="btn btn-blue minus" onclick="updateScore(0, -1)">ー</button>
@@ -177,6 +178,7 @@
     const urlParams = new URLSearchParams(window.location.search);
     const courtId = urlParams.get('courtId');
     
+    const letterMap = {A: 1,B: 2,C: 3,D: 4,E: 5};
 
     const judgeId = urlParams.get('jid');
     document.getElementById('judgeId').textContent = judgeId;
@@ -187,6 +189,7 @@
     document.getElementById('courtId').textContent = courtId;
     document.title = `${courtId} | ジャッジ ${judgeId}`;
 
+    document.getElementById('noconnection').style.display = 'none';
 
     if(mode == 'kata')
     {
@@ -207,6 +210,9 @@
         const data = JSON.parse(event.data);
         console.log(data);
         
+        const overjudge = (data.Controls.maxJudgeCount < letterMap[judgeId]);
+        let IsConnected = false;
+
         if (data.type === 'scores') {
             const judgesBarContainer = document.getElementById('judges-bar-container');
         
@@ -215,8 +221,7 @@
 
             const scores = data.Scores;
             const numberofmatch = data.Controls.numberOfMatche;
-
-            IsConnected = false;
+            
             scores.forEach(score => {
                 if(score.judgeId == judgeId)
                 {
@@ -228,7 +233,23 @@
                     IsConnected = true;
                 }
             });
-            document.getElementById('overalert').style.display = IsConnected ? 'none' : 'block';
+            document.getElementById('overalert').style.display = 'none';
+            console.log('overjudge', overjudge);
+            console.log('IsConnected', IsConnected);
+
+            if(overjudge)
+            {
+                document.getElementById('redScore').textContent = '-';
+                document.getElementById('blueScore').textContent = '-';
+                document.getElementById('overalert').style.display = 'block';
+            }
+            else if(!IsConnected)
+            {
+                document.getElementById('redScore').textContent = '-';
+                document.getElementById('blueScore').textContent = '-';
+                document.getElementById('noconnection').style.display = 'block';
+            }
+
         }
     };
 
