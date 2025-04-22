@@ -159,13 +159,13 @@ wss.on('connection', ws => {
             case 'Fouls':
                 const main = courts[ws.courtId].Controls;
                 if(data.isFouls){
-                    main.redFouls += data.red;
-                    main.blueFouls += data.blue;
+                    main.redFouls = Math.max(0,main.redFouls + data.red);
+                    main.blueFouls = Math.max(0,main.blueFouls + data.blue);
                 }
                 else
                 {
-                    main.redWarnig += data.red;
-                    main.blueWarnig += data.blue;
+                    main.redWarnig = Math.max(0, main.redWarnig + data.red);
+                    main.blueWarnig = Math.max(0, main.blueWarnig + data.blue);
                 }
                 break;
             case 'Showdown':
