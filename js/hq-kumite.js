@@ -39,11 +39,17 @@ ws.onmessage = (event) => {
                 
         });
 
-        const ctrl = data.Controls;
-        judgeCountMarks(ctrl.maxJudgeCount);
+       
     }
+    const ctrl = data.Controls;
 
+    document.getElementById('red-warning').textContent = ctrl.redWarnig;
+    document.getElementById('blue-warning').textContent = ctrl.blueWarnig;
+    document.getElementById('red-fouls').textContent = ctrl.redFouls;
+    document.getElementById('blue-fouls').textContent = ctrl.blueFouls;
 
+    judgeCountMarks(ctrl.maxJudgeCount);
+    showdownMarks(ctrl.showdown);
 };
 
 function timer(command,settingtime = 180) 
