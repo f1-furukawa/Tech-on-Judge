@@ -25,24 +25,12 @@
         <button onclick="judgeCount(3)" class="jcbtn jc3">3人</button>
         <button onclick="judgeCount(5)" class="jcbtn jc5">5人</button>
     </div>
+
     <div>
         <h2>結果表示</h2>
         <button onclick="showdown('show')" class="showdownbtn show">全て表示</button>
         <button onclick="showdown('result')" class="showdownbtn result">結果のみ表示</button>
         <button onclick="showdown('hidde')" class="showdownbtn hidde">隠す</button>
-    </div>
-
-    <div>
-        <h2>採点</h2>
-        <button onclick="numberofmatch(1)" class="nmbtn nm1">１回目</button>
-        <button onclick="numberofmatch(2)" class="nmbtn nm2">２回目</button>
-    </div>
-
-    <div>
-        <h2>型名</h2>
-        <!-- https://www.taekwon-do.co.jp/taekwondo/tul/ 型一覧参照-->
-            <button class="katabtn clear">クリア</button><br />
-            <div id='katabtn'></div>            
     </div>
 
     <h2>ジャッジ別スコア</h2>
@@ -58,6 +46,19 @@
         </thead>
         <tbody id="judgeScores"></tbody>
     </table>
+
+    <div>
+        <h2>採点</h2>
+        <button onclick="numberofmatch(1)" class="nmbtn nm1">１回目</button>
+        <button onclick="numberofmatch(2)" class="nmbtn nm2">２回目</button>
+    </div>
+
+    <div>
+        <h2>型名</h2>
+        <!-- https://www.taekwon-do.co.jp/taekwondo/tul/ 型一覧参照-->
+            <button class="katabtn clear">クリア</button><br />
+            <div id='katabtn'></div>            
+    </div>
 
     <script src="js/wsurl.js"></script>
     <script src="js/hq.js"></script>

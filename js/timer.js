@@ -1,11 +1,5 @@
 
 let timerInterval;
-let isRunning = false;
-
-let settingtime = 180; // 3分（180秒）
-let startTimeStamp;
-let pauseElapsed = 0;
-
 
 function updateTimerDisplay(remainingTime) {
     let minutes = Math.floor(remainingTime / 60);
@@ -14,43 +8,36 @@ function updateTimerDisplay(remainingTime) {
         String(minutes).padStart(2, '0') + ":" + String(seconds).padStart(2, '0');
 }
 
-function resumeCountdown() {
+function applyTimerState(controls) {
+    clearInterval(timerInterval);
     
-    if (isRunning) return; // 二重起動防止
+    if (!controls || !controls.timer) return;
+    
+    const now = Date.now();
+    let remaining = controls.timerRange;
 
-    isRunning = true;
-    startTimeStamp = Date.now() - pauseElapsed * 1000; // 再開時のタイムスタンプを更新
-    
-    clearInterval(timerInterval); // ←一旦クリアしてから再開
+    if (controls.timer === 'start') {
+        const elapsed = (now - controls.startTimestamp) / 1000;
+        remaining = Math.max(0, controls.timerRange - elapsed);
+        startCountdownFromRemaining(remaining);
+    } else if (controls.timer === 'stop') {
+        remaining = Math.max(0, controls.timerRange - controls.pauseElapsed);
+        updateTimerDisplay(remaining);
+    }
+}
+
+function startCountdownFromRemaining(startSeconds) {    
+    let startTime = Date.now();
+
     timerInterval = setInterval(() => {
-        const now = Date.now();
-        const elapsed = (now - startTimeStamp) / 1000;
-        const remaining = Math.max(0, settingtime - elapsed); // 残り時間を計算
-
+        let elapsed = (Date.now() - startTime) / 1000;
+        let remaining = Math.max(0, startSeconds - elapsed);
         updateTimerDisplay(remaining);
 
-        if (remaining <= 0) 
-        {
+        if (remaining <= 0) {
             clearInterval(timerInterval);
-            pauseElapsed = 0;
         }
     }, 500);
 }
 
-function pauseCountdown() {
-    if (!isRunning) return;
-
-    clearInterval(timerInterval); // タイマーを停止
-    const now = Date.now();
-    pauseElapsed = (now - startTimeStamp) / 1000; // 停止時の経過時間を保存
-    isRunning = false;
-}
-
-function timerReset(newtime = 180) {
-    settingtime = newtime; // 新しい設定時間を保存
-    clearInterval(timerInterval); // タイマーを停止
-    pauseElapsed = 0; // 経過時間をリセット
-    isRunning = false;
-    updateTimerDisplay(settingtime); 
-}
 

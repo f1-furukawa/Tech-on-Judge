@@ -38,7 +38,6 @@ function showdownMarks(showdown)
     });
 }
 
-
 document.addEventListener("click", (event) => {
     if (event.target.matches(".scorereset, .remove")) {
         const td = event.target.closest("td");

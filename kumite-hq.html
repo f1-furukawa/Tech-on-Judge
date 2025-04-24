@@ -19,6 +19,8 @@
         .red { background-color: red; color: white; }
         .blue { background-color: blue; color: white; } 
         .fouls{font-size:18px;}
+        .timer{font-size:40px;}
+        .customtime{width: 75px; margin: 5px;font-size: 20px;text-align: right;}
     </style>
     </style>
 </head>
@@ -32,18 +34,32 @@
     </div>
 
     <div>
-        <h2>タイマー</h2>
+        <h2>結果表示</h2>
+        <button onclick="showdown('show')" class="showdownbtn show">全て表示</button>
+        <button onclick="showdown('hidde')" class="showdownbtn hidde">結果のみ表示</button>
+    </div>
+
+    <div>
+        <h2>タイマー時間設定</h2>
         <div>
             <button class="btntimer t180" onclick="timer('reset',180)">3分</button>
             <button class="btntimer t120" onclick="timer('reset',120)">2分</button>
             <button class="btntimer t090" onclick="timer('reset',90)">1分30秒</button>
+            </br>
+            <input type="number" class="customtime" id="customtime" min="0" max="999" value="60"/>秒
+            <button class="btntimer tcustom" onclick="setCustomTime()">手動設定</button>
         </div>
+    </div>    
+    <div>
+        <h2>タイマー操作</h2>
         <div>
-            <button class="tStop" onclick="timer('stop')">stop</button>
-            <button class="tStart" onclick="timer('start')">start</button>
+            <button class="btntimercontrol tstop" onclick="timer('stop')">stop</button>
+            <button class="btntimercontrol tstart" onclick="timer('start')">start</button>
         </div>
-        
     </div>
+
+    <div class="timer" id="timer">03:00</div>
+
     <div>
         <h2>注意</h2>
         <div class="fouls"><span id="red-warning">0</span> - <span id="blue-warning">0</span></div>
@@ -55,8 +71,8 @@
             <button class="btnminus red"  onclick="updateWarningFoul(false,-1, 0)">-1</button>
             <button class="btnminus blue" onclick="updateWarningFoul(false,0, -1)">-1</button>
         </div>
-        
     </div>
+
     <div>
         <h2>反則</h2>
         <div class="fouls"><span id="red-fouls">0</span> - <span id="blue-fouls">0</span></div>
@@ -70,21 +86,16 @@
         </div>
     </div>
 
-    <div>
-        <h2>結果表示</h2>
-        <button onclick="showdown('show')" class="showdownbtn show">全て表示</button>
-        <button onclick="showdown('hidde')" class="showdownbtn hidde">隠す</button>
-    </div>
-    
-    <h2>延長試合</h2>
-    <button onclick="extendMatch()">延長試合</button>
-    
     <h2>試合終了</h2>
     <button onclick="endMatch()">試合終了</button>
     <button onclick="blinkStop()">点滅停止</button>
+
+    <h2>延長試合</h2>
+    <button onclick="extendMatch()">延長試合</button>
     
     <h2>ジャッジ別スコア</h2>
-    <button onclick="allJudgeScoreReset()">全員のスコアリセット</button>
+    <button onclick="allJudgeScoreReset()">全員のスコアリセット</button></br>
+    <button onclick="FoulsReset()">注意・反則のリセット</button>
     <table>
         <thead>
             <tr>
@@ -98,6 +109,7 @@
     </table>
 
     <script src="js/wsurl.js"></script>
+    <script src="js/timer.js"></script>
     <script src="js/hq.js"></script>
     <script src="js/hq-kumite.js"></script>
  </body>
