@@ -35,15 +35,9 @@ ws.onmessage = (event) => {
                 judgeBar.querySelectorAll(`.BScore2`)[0].textContent = getKataScore(blue2);
 
                 // 差に基づいてポイントを加算
-                if (diff < 0) totalScores.red++;
-                else if (diff > 0) totalScores.blue++;    
-                else if(diff == 0) totalScores.even++;
-
-                if(data.Controls.numberOfMatche == 2){
-                    if (diff2 < 0) totalScores.red++;
-                    else if (diff2 > 0) totalScores.blue++;    
-                    else if(diff2 == 0) totalScores.even++;
-                }
+                if (diff + diff2 < 0) totalScores.red++;
+                else if (diff + diff2 > 0) totalScores.blue++;    
+                else if(diff + diff2 == 0) totalScores.even++;
             });
 
             // 合計ポイントを更新
