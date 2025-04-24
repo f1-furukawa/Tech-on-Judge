@@ -157,6 +157,13 @@ wss.on('connection', ws => {
                     target.blue2 = 0;
                 }
                 break;
+            case 'FoulsReset':
+                const controls = courts[ws.courtId].Controls;
+                controls.redWarnig = 0;
+                controls.blueWarnig = 0;
+                controls.redFouls = 0;
+                controls.blueFouls = 0;
+                break;
             case 'judgeremove':
                 delete courts[ws.courtId].judges[data.judgeId];
                 break;

@@ -70,9 +70,15 @@ function timerCountMarks(timerRange){
     targetClass = String(timerRange).padStart(3, '0');
     console.log(targetClass);
 
-    document.querySelectorAll(`.t${targetClass}`).forEach((btn) => {
+    let buttons = document.querySelectorAll(`.t${targetClass}`);
+    if(buttons.length === 0){
+        buttons = document.querySelectorAll(`.tcustom`);}
+
+    buttons.forEach((btn) => {
         btn.classList.add('active');
     });
+
+    document.getElementById('customtime').value = timerRange;
 }
 
 function timerControlMarks(timer)
@@ -109,7 +115,23 @@ function extendMatch(){
     ws.send(data);
 }
 
+function setCustomTime()
+{
+    const time = document.getElementById('customtime').value;
+    if (time) {
+        timer('reset', time);
+    } else {
+        alert('時間を入力してください。');
+    }
+}
+
 function blinkStop(){
     const data = JSON.stringify({type:'blinkStop'});
+    ws.send(data);
+}
+
+function FoulsReset()
+{
+    const data = JSON.stringify({ type: 'FoulsReset', courtId });
     ws.send(data);
 }
