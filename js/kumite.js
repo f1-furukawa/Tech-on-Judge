@@ -63,23 +63,12 @@ ws.onmessage = (event) => {
         }
 
         case 'Timer': {
-            switch (data.Controls.timer) {
-                case 'start':
-                    resumeCountdown();
-                    break;
-                case 'stop':
-                    pauseCountdown();
-                    break;
-                case 'reset':
-                    timerReset(data.Controls.timerRange);
-                    break;
-            }
+            applyTimerState(data.Controls);
             break;
         }
 
         case 'extendMatch': {
-            // 時間を60秒にセットし直す。
-            timerReset(60);
+            applyTimerState(data.Controls);
             break;
         }
 

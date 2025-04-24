@@ -46,6 +46,8 @@ function createControls(mode)
     return { 
         timer: 'stop', 
         timerRange:180,
+        startTimestamp: null, // Date.now()
+        pauseElapsed: 0, // 停止中に経過していた時間
         showdown:false, 
         redWarnig: 0,
         blueWarnig: 0,
@@ -98,6 +100,13 @@ wss.on('connection', ws => {
                     if(!mianControl){
                         court.Controls = createControls(data.mode);
                     }
+                }
+                //タイマー同期のために最初の状態を送信する。
+                if (court) {
+                    ws.send(JSON.stringify({
+                        type: 'Timer',
+                        Controls: court.Controls
+                    }));
                 }
                 console.log('JOIN COURT',court);
                 break;
@@ -152,8 +161,33 @@ wss.on('connection', ws => {
                 delete courts[ws.courtId].judges[data.judgeId];
                 break;
             case 'timer':
-                courts[ws.courtId].Controls.timer = data.command;
-                courts[ws.courtId].Controls.timerRange = data.timerRange;
+                const ctrl = courts[ws.courtId].Controls;
+                const now = Date.now();
+
+                switch(data.command){
+                    case 'start':
+                        if(ctrl.timer !== 'start')
+                        {
+                            ctrl.timer = 'start';
+                            ctrl.startTimestamp = now - ctrl.pauseElapsed * 1000; // 再開時のタイムスタンプを更新
+                        }
+                        break;
+                    case 'stop':
+                        if(ctrl.timer === 'start')
+                        {
+                            ctrl.timer = 'stop';
+                            ctrl.pauseElapsed = (now - ctrl.startTimestamp) / 1000; // 停止時の経過時間を保存
+                        }
+                        break;
+                    case 'reset':
+                        ctrl.timer = 'stop'; // タイマーを停止
+                        ctrl.startTimestamp = null; // Date.now()
+                        ctrl.pauseElapsed = 0; // 停止中に経過していた時間
+                        ctrl.timerRange = data.timerRange;
+                        break;
+                }
+                // courts[ws.courtId].Controls.timer = data.command;
+                // courts[ws.courtId].Controls.timerRange = data.timerRange;
                 broadcast('Timer',ws.courtId);
                 return;
             case 'Fouls':
@@ -202,7 +236,9 @@ wss.on('connection', ws => {
                 resetControls.blueFouls = 0;
                 resetControls.timer = 'stop'; // タイマーを停止
                 resetControls.timerRange = 60; // 60秒にセット
-
+                resetControls.startTimestamp = null; //経過状態を初期化
+                resetControls.pauseElapsed = 0; 
+                
                 broadcast('extendMatch',ws.courtId);
                 break;
             case 'kataName':

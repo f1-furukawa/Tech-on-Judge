@@ -33,7 +33,7 @@ const kataNameList = [
 const katabtn = document.getElementById('katabtn');
 kataNameList.forEach(kataName => {
 
-    const btn = `<button class="katabtn">${kataName.ja}</button>`
+    const btn = `<button class="katabtn ${kataName.en}">${kataName.ja}</button>`
     katabtn.innerHTML += btn;
 
 })
@@ -79,6 +79,7 @@ ws.onmessage = (event) => {
     const ctrl = data.Controls;
     judgeCountMarks(ctrl.maxJudgeCount);
     numberofmatchMarks(ctrl.numberOfMatche);
+    kataNameMarks(ctrl.kataName);
     showdownMarks(ctrl.showdown);
 };
 
@@ -100,6 +101,25 @@ function numberofmatchMarks(number)
     });
 
     document.querySelectorAll(`.nm${number}`).forEach((btn) => {
+        btn.classList.add('active');
+    });
+}
+
+function kataNameMarks(kataName)
+{
+    document.querySelectorAll('.katabtn').forEach((btn) => { 
+        btn.classList.remove('active');
+    });
+
+    if(kataName === '')
+        {
+            document.querySelectorAll(`.clear`).forEach((btn) => {
+                btn.classList.add('active');
+            });
+            return;
+        }
+
+    document.querySelectorAll(`.${kataName}`).forEach((btn) => {
         btn.classList.add('active');
     });
 }
