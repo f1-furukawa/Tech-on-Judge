@@ -135,3 +135,21 @@ function FoulsReset()
     const data = JSON.stringify({ type: 'FoulsReset', courtId });
     ws.send(data);
 }
+
+const input = document.getElementById("customtime");
+
+input.addEventListener("input", function () {
+  const max = parseInt(this.max, 10);
+  const min = parseInt(this.min, 10);
+  let value = parseInt(this.value, 10);
+
+  if (isNaN(value)) {
+    return;
+  }
+
+  if (value > max) {
+    this.value = max;
+  } else if (value < min) {
+    this.value = min;
+  }
+});
