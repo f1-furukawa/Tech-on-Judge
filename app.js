@@ -118,11 +118,17 @@ wss.on('connection', ws => {
                     {
                         judge.red += data.red;
                         judge.blue += data.blue;
+
+                        if(data.red >= 1000)judge.red = 50;
+                        if(data.blue >= 1000)judge.blue = 50;
+                        
                     }
                     if(numberOfMatche === 2)
                     {
                         judge.red2 += data.red;
                         judge.blue2 += data.blue;
+                        if(data.red >= 1000)judge.red2 = 50;
+                        if(data.blue >= 1000)judge.blue2 = 50;
                     }
                 }
                 console.log('UPDATE',courts);

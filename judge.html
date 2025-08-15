@@ -82,6 +82,7 @@
       display: flex;
       justify-content: space-between;
       margin-top: auto;
+      padding-top: 5px;
     }
 
     /* 基本ボタンスタイル */
@@ -161,6 +162,10 @@
       <div id="overalert">指定のジャッジの人数以上です。参加できません。</div>
       <div id="noconnection" class="display:none;">スコアボードと接続出来ていません。</div>
       <div class="button-section">
+        <button class="btn btn-red zero" onclick="updateScore(1000, 0)">０点</button>
+        <button class="btn btn-blue zero" onclick="updateScore(0, 1000)">０点</button>
+      </div>
+      <div class="button-section">
         <button class="btn btn-red minus" onclick="updateScore(-1, 0)">ー</button>
         <button class="btn btn-blue minus" onclick="updateScore(0, -1)">ー</button>
       </div>
@@ -195,6 +200,10 @@
     {
         document.querySelectorAll('.plus').forEach(function(e) {e.textContent = 'ー'});
         document.querySelectorAll('.minus').forEach(function(e) {e.textContent = '＋'});
+    }
+    if(mode != 'kata')
+    {
+        document.querySelectorAll('.zero').forEach(function(e) {e.style.display = 'none';});
     }
 
     ws.onopen = () => {
