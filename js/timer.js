@@ -1,6 +1,9 @@
 
 let timerInterval;
 
+const buzzer = new Audio("img/buzzer.mp3");
+
+
 function updateTimerDisplay(remainingTime) {
     let minutes = Math.floor(remainingTime / 60);
     let seconds = Math.round(remainingTime % 60);
@@ -28,6 +31,7 @@ function applyTimerState(controls) {
 
 function startCountdownFromRemaining(startSeconds) {    
     let startTime = Date.now();
+    let hasBuzzed = false; // ブザーが1回だけ鳴るように
 
     timerInterval = setInterval(() => {
         let elapsed = (Date.now() - startTime) / 1000;
@@ -36,6 +40,13 @@ function startCountdownFromRemaining(startSeconds) {
 
         if (remaining <= 0) {
             clearInterval(timerInterval);
+
+            // ブザー再生（1回だけ）
+            if (!hasBuzzed) {
+                console.log("beeeeeep!!");
+                buzzer.play().catch(err => console.error("ブザー再生エラー:", err));
+                hasBuzzed = true;
+            }
         }
     }, 500);
 }
