@@ -115,7 +115,7 @@ ws.onmessage = (event) => {
 
 document.body.addEventListener('click', () => {
   buzzer.play().then(() => buzzer.pause()).catch(() => {});
-  document.getElementById('buzzer').innerHTML = 'ブザー：ON';
+  document.getElementById('buzzer').innerHTML = 'Buzzer：ON';
 });
 
 document.getElementById('resetButton').addEventListener('click', () => {
