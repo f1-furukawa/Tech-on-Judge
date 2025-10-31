@@ -29,6 +29,7 @@ function broadcast(type,courtId){
         default:
     }
     console.log('broadcast',type,result,court.Controls);
+
     wss.clients.forEach(client => {
         if (client.readyState === WebSocket.OPEN && client.courtId === courtId) {
             client.send(JSON.stringify({
@@ -176,6 +177,8 @@ wss.on('connection', ws => {
             case 'timer':
                 const ctrl = courts[ws.courtId].Controls;
                 const now = Date.now();
+                
+                ctrl.serverNow = now;
 
                 switch(data.command){
                     case 'start':

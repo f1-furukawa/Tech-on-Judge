@@ -1,5 +1,6 @@
 
 let timerInterval;
+let timeOffset = 0;
 
 const buzzer = new Audio("img/buzzer.mp3");
 
@@ -16,11 +17,17 @@ function applyTimerState(controls) {
     
     if (!controls || !controls.timer) return;
     
-    const now = Date.now();
+    if(controls.serverNow){
+        const localNow = Date.now();
+        timeOffset = controls.serverNow - localNow;
+        console.log("timeoffset (ms):",timeOffset);
+    }
+    
     let remaining = controls.timerRange;
 
     if (controls.timer === 'start') {
-        const elapsed = (now - controls.startTimestamp) / 1000;
+        const serverNow = Date.now() + timeOffset;
+        const elapsed = (serverNow - controls.startTimestamp) / 1000;
         remaining = Math.max(0, controls.timerRange - elapsed);
         startCountdownFromRemaining(remaining);
     } else if (controls.timer === 'stop') {
