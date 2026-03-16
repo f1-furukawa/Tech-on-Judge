@@ -20,6 +20,7 @@ ws.onmessage = (event) => {
             const judgesBarContainer = document.getElementById('judges-bar-container');
             let totalRedPoints = 0;
             let totalBluePoints = 0;
+            let totalDrawPoint = 0;
 
             const scores = data.Scores;
             const controls = data.Controls;
@@ -48,7 +49,8 @@ ws.onmessage = (event) => {
                 } else if (diff < 0) {
                     totalBluePoints++;
                     setScoreBar(judgeId, '.b' + absDiff, 'blue');
-                }
+                }else if(diff == 0){
+                    totalDrawPoint++;                }
             });
 
             document.getElementById('redWarning').textContent = controls.redWarnig ?? 0;
@@ -59,6 +61,7 @@ ws.onmessage = (event) => {
             // 合計ポイントを更新
             document.getElementById('totalRedPoints').textContent = totalRedPoints;
             document.getElementById('totalBluePoints').textContent = totalBluePoints;
+            document.getElementById('totalDrawPoint').textContent = totalDrawPoint;
             break;
         }
 
@@ -95,14 +98,19 @@ ws.onmessage = (event) => {
             // 合計ポイントを取得
             const redPoint = parseInt(document.getElementById('totalRedPoints').textContent, 10);
             const bluePoint = parseInt(document.getElementById('totalBluePoints').textContent, 10);
-
-            if (redPoint >= bluePoint) {
+            const drawPoint = parseInt(document.getElementById('totalDrawPoint').textContent, 10);
+             const result = matchResult(redPoint,bluePoint,drawPoint);
+            if(result == "red"){
                 document.getElementById('totalRedPoints').classList.add('blink');
             }
-
-            if (bluePoint >= redPoint) {
+            if(result == "blue"){
                 document.getElementById('totalBluePoints').classList.add('blink');
             }
+            if(result == "draw"){
+                document.getElementById('totalRedPoints').classList.add('blink');
+                document.getElementById('totalBluePoints').classList.add('blink');
+            }
+
             break;
         }
 
@@ -122,6 +130,17 @@ document.getElementById('resetButton').addEventListener('click', () => {
     ws.send(JSON.stringify({ type: 'reset' }));
     document.getElementById('judges-bar-container').innerHTML = '';
 });
+
+function matchResult(red,blue,draw)
+{
+    if(red == blue) return "draw";
+
+    const max = Math.max(draw, Math.max(red,blue));
+    if(red == max) return "red";
+    if(blue == max) return "blue";
+
+    return "draw";
+}
 
 function isDebugEmpty(obj) {
     return (
